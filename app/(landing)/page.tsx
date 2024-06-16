@@ -1,13 +1,6 @@
 import LandingBody from "@/app/(landing)/LandingBody";
 import { getTitle } from "@/lib/utils";
-import { URL } from "url";
-
-export const getThumbnail = (videoUrl: string) => {
-  const videoId = new URL(videoUrl).searchParams.get("v");
-  return videoId
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    : "";
-};
+import { getThumbnail } from "./utils";
 
 const examples = [
   "https://www.youtube.com/watch?v=ciW1ppBdkRc",
@@ -17,10 +10,9 @@ const examples = [
   "https://www.youtube.com/watch?v=YCzL96nL7j0",
 ];
 
-async function getData() {
+async function getData(): Promise<Example[]> {
   const data = await Promise.all(
     examples.map(async (url) => {
-      console.log(url);
       const thumbnail = getThumbnail(url);
       const title = await getTitle(url);
       return { url, thumbnail, title };
