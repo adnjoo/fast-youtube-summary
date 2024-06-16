@@ -37,7 +37,7 @@ async function summarizeTranscript(transcript: string) {
 export async function GET(request: NextRequest, response: Response) {
   const searchParams = request.nextUrl.searchParams;
   const url = searchParams.get("url") as string;
-  // url is .. for /summarize?url=https://www.youtube.com/watch?v=62wEk02YKs0&pp=ygUIYmJjIG5ld3M%3D // coffee and what it does ..
+  // url is .. for /summarize?url=https://www.youtube.com/watch?v=62wEk02YKs0 // coffee and what it does ..
 
   const transcript = await getYouTubeTranscript(url);
   const summary = await summarizeTranscript(transcript);

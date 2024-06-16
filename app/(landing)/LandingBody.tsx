@@ -7,10 +7,44 @@ import { Button } from "@/components/ui/button";
 export default function LandingBody() {
   const [url, setUrl] = useState("");
   const [summary, setSummary] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = event.target.value;
+    setUrl(newUrl);
+
+    // Fetch thumbnail URL when URL input changes
+    if (isValidYouTubeUrl(newUrl)) {
+      fetchThumbnail(newUrl);
+    } else {
+      setThumbnailUrl(""); // Clear thumbnail if URL is invalid
+    }
+  };
+
+  const isValidYouTubeUrl = (url: string) => {
+    try {
+      const { hostname, pathname, searchParams } = new URL(url);
+      return (
+        (hostname === "www.youtube.com" || hostname === "youtube.com") &&
+        pathname === "/watch" &&
+        searchParams.has("v")
+      );
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const fetchThumbnail = (videoUrl: string) => {
+    const videoId = new URL(videoUrl).searchParams.get("v");
+    if (videoId) {
+      setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     try {
       setLoading(true);
       const response = await fetch(`/summarize?url=${encodeURIComponent(url)}`);
@@ -26,7 +60,7 @@ export default function LandingBody() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center  p-24">
+    <main className="flex min-h-screen flex-col items-center p-24">
       <h1 className="text-2xl mb-4">YouTube URL Summarizer</h1>
       <form
         onSubmit={handleSubmit}
@@ -36,7 +70,7 @@ export default function LandingBody() {
           type="url"
           placeholder="Enter YouTube URL e.g. https://www.youtube.com/watch?v=62wEk02YKs0&pp=ygUIYmJjIG5ld3M%3D"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={handleInputChange}
           className="mb-4"
         />
         <Button
@@ -47,6 +81,16 @@ export default function LandingBody() {
           {loading ? "Loading..." : "Summarize"}
         </Button>
       </form>
+      {thumbnailUrl && (
+        <div className="mt-4">
+          <h3 className="text-lg mb-2 sr-only">Thumbnail</h3>
+          <img
+            src={thumbnailUrl}
+            alt="YouTube Thumbnail"
+            className="w-full h-auto"
+          />
+        </div>
+      )}
       {summary && (
         <div className="mt-8 p-4 border border-gray-300 rounded">
           <h2 className="text-xl mb-2">Summary</h2>
