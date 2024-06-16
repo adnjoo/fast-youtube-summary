@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,17 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
-  const [showExamples, setShowExamples] = useState(true);
+  const [showExamples, setShowExamples] = useState(() => {
+    // Retrieve the initial state from localStorage or default to true
+    const storedValue = localStorage.getItem("showExamples");
+    return storedValue ? JSON.parse(storedValue) : true;
+  });
   const [thumbnailTitle, setThumbnailTitle] = useState("");
+
+  useEffect(() => {
+    // Update localStorage whenever showExamples changes
+    localStorage.setItem("showExamples", JSON.stringify(showExamples));
+  }, [showExamples]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
