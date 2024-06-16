@@ -87,7 +87,7 @@ export default function LandingBody() {
           <img
             src={thumbnailUrl}
             alt="YouTube Thumbnail"
-            className="w-full h-auto"
+            className="w-full h-auto max-w-md rounded"
           />
         </div>
       )}
