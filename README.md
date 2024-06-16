@@ -12,14 +12,14 @@ To install, follow these steps:
     git clone https://github.com/adnjoo/fast-youtube-summary.git
     ```
 
-2. Navigate to the project directory:
+2. Navigate to the project web folder:
     ```
-    cd fast-youtube-summary
+    cd fast-youtube-summary/web
     ```
 
-3. Install the dependencies:
-    ```
-    npm install
+3. Make `.env` file like:
+    ```bash
+    OPENAI_KEY=..
     ```
 
 ## Usage
@@ -29,16 +29,6 @@ To use the Youtube Summarizer, follow these steps:
     ```
     npm run dev
     ```
-
-2. Open your web browser and go to `http://localhost:3000`.
-
-3. Enter the URL of the Youtube video you want to summarize.
-
-4. Click on the "Summarize" button.
-
-5. Wait for the summarization process to complete.
-
-6. View the summarized text.
 
 ## Contributing
 Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
