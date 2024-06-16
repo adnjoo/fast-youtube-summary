@@ -102,7 +102,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   };
 
   return (
-    <main className="flex min-h-screen flex-col p-8">
+    <main className="mt-4 flex min-h-screen flex-col sm:p-8">
       <div className="flex items-center mb-8 mx-auto">
         <span className="mr-2 text-lg font-semibold">Show Examples</span>
         <Switch checked={showExamples} onCheckedChange={setShowExamples} />
@@ -110,8 +110,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
       {showExamples && (
         <div className="flex flex-col mb-8 mx-auto">
-          <span className="text-center text-lg font-semibold">Examples</span>
-          <div className="animate-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
+          <div className="animate-in grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
             {examples.map((example: Example) => (
               <div
                 key={example.url}
@@ -169,7 +168,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       )}
       {loading && <Loader2 className="w-12 h-12 mx-auto mt-8 animate-spin" />}
       {summary && !loading && (
-        <div className="mt-8 p-4 border border-gray-300 rounded">
+        <div className="mt-8 p-2 text-sm sm:text-base sm:p-4 border border-gray-300 rounded">
           <h2 className="text-xl mb-2">Summary</h2>
           <p>{summary}</p>
         </div>
