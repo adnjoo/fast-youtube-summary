@@ -5,26 +5,15 @@ import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getThumbnail, getTitle } from "@/lib/utils"; // Ensure getTitle is implemented to fetch the video title
+import { getThumbnail } from "@/lib/utils";
+import { Example } from "./page";
 
-const examples = [
-  "https://www.youtube.com/watch?v=ciW1ppBdkRc",
-  "https://www.youtube.com/watch?v=KlFXl--H8eM",
-  "https://www.youtube.com/watch?v=YInQ137_J3Y",
-  "https://www.youtube.com/watch?v=YpZff07df-Q",
-  "https://www.youtube.com/watch?v=62wEk02YKs0",
-  "https://www.youtube.com/watch?v=oRkNaF0QvnI",
-  "https://www.youtube.com/watch?v=YCzL96nL7j0",
-  "https://www.youtube.com/watch?v=8L11aMN5KY8",
-];
-
-export default function LandingBody() {
+export default function LandingBody({ examples}: { examples: Example[]}) {
   const [url, setUrl] = useState("");
   const [summary, setSummary] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hoveredTitle, setHoveredTitle] = useState("");
-  const [hoveredUrl, setHoveredUrl] = useState("");
+  const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
@@ -75,7 +64,6 @@ export default function LandingBody() {
 
   const handleThumbnailClick = async (exampleUrl: string) => {
     setUrl(exampleUrl);
-    fetchThumbnail(exampleUrl);
 
     // Simulate form submission
     try {
@@ -94,39 +82,34 @@ export default function LandingBody() {
     }
   };
 
-  const handleMouseEnter = async (exampleUrl: string) => {
-    const title = await getTitle(exampleUrl); // Implement getTitle to fetch the video title
-    setHoveredUrl(exampleUrl);
-    setHoveredTitle(title);
-  };
+  const handleMouseEnter = (example: Example) => {
+    setHoveredExample(example);
+  }
 
   const handleMouseLeave = () => {
-    setHoveredTitle("");
-    setHoveredUrl("");
-  };
+    setHoveredExample(null);
+  }
 
   return (
     <main className="flex min-h-screen flex-col p-8">
       <div className="flex flex-col mb-8 mx-auto">
         <span className="text-center text-lg font-semibold">Examples</span>
         <div className="animate-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
-          {examples.map((example) => (
-            <div key={example} className="relative cursor-pointer"
+          {examples.map((example: Example) => (
+            <div key={example.url} className="relative cursor-pointer"
               onMouseEnter={() => handleMouseEnter(example)}
               onMouseLeave={handleMouseLeave}
-              onClick={() => handleThumbnailClick(example)}
+              onClick={() => handleThumbnailClick(example.url)}
             >
               <img
-                className="max-w-[120px] sm:max-w-[240px] rounded-sm shadow-md cursor-pointer z-50"
-                src={getThumbnail(example)}
+                className='max-w-[120px] sm:max-w-[180px] rounded-sm shadow-md cursor-pointer z-50'
+                src={example.thumbnail}
                 alt="thumbnail"
               />
               <div
-                className={`absolute bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${
-                  hoveredUrl === example ? "opacity-100" : "opacity-0"
-                }`}
+                className={`absolute transition bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${example === hoveredExample ? 'opacity-100' : 'opacity-0'}`}
               >
-                {hoveredTitle}
+                {example.title}
               </div>
             </div>
           ))}
