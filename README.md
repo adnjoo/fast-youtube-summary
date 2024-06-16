@@ -2,7 +2,7 @@
 
 Summarizes Youtube videos fast + free
 
-![](/public/serve.jpg)
+![](/web/public/serve.jpg)
 
 ## Installation
 To install, follow these steps:
