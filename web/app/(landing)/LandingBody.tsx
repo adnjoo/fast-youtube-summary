@@ -15,16 +15,20 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
-  const [showExamples, setShowExamples] = useState(() => {
-    // Retrieve the initial state from localStorage or default to true
-    const storedValue = localStorage.getItem("showExamples");
-    return storedValue ? JSON.parse(storedValue) : true;
-  });
+  const [showExamples, setShowExamples] = useState<boolean | undefined>(
+    undefined
+  );
   const [thumbnailTitle, setThumbnailTitle] = useState("");
 
   useEffect(() => {
-    // Update localStorage whenever showExamples changes
-    localStorage.setItem("showExamples", JSON.stringify(showExamples));
+    const storedValue = localStorage.getItem("showExamples");
+    setShowExamples(storedValue ? Boolean(JSON.parse(storedValue)) : true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof showExamples === "boolean") {
+      localStorage.setItem("showExamples", JSON.stringify(showExamples));
+    }
   }, [showExamples]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
