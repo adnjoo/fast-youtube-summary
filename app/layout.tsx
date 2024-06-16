@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Footer } from "@/components/ui/Footer";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Youtube Summarizer",
-  description: "Summarize youtube videos for free",
+  title: "Fast Youtube Summary",
+  description: "Summarize YouTube videos for free",
 };
 
 export default function RootLayout({

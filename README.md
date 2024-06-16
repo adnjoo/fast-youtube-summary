@@ -1,20 +1,20 @@
-# Youtube Summarizer
+# Fast YouTube Summary
 
-Summarizes Youtube videos
+Summarizes Youtube videos fast + free
 
 ![](/public/serve.jpg)
 
 ## Installation
-To install the Youtube Summarizer, follow these steps:
+To install, follow these steps:
 
 1. Clone the repository:
     ```
-    git clone https://github.com/adnjoo/youtube-summarizer.git
+    git clone https://github.com/adnjoo/fast-youtube-summary.git
     ```
 
 2. Navigate to the project directory:
     ```
-    cd youtube-summarizer
+    cd fast-youtube-summary
     ```
 
 3. Install the dependencies:
