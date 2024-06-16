@@ -1,6 +1,5 @@
 import LandingBody from "@/app/(landing)/LandingBody";
-import { getTitle } from "@/lib/utils";
-import { getThumbnail } from "./utils";
+import { getTitle, getThumbnail } from "@/lib/utils";
 
 const examples = [
   "https://www.youtube.com/watch?v=ciW1ppBdkRc",
