@@ -1,14 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getThumbnail, getTitle } from "@/lib/utils"; // Ensure getTitle is implemented to fetch the video title
+
+const examples = [
+  "https://www.youtube.com/watch?v=ciW1ppBdkRc",
+  "https://www.youtube.com/watch?v=KlFXl--H8eM",
+  "https://www.youtube.com/watch?v=YInQ137_J3Y",
+  "https://www.youtube.com/watch?v=YpZff07df-Q",
+  "https://www.youtube.com/watch?v=62wEk02YKs0",
+  "https://www.youtube.com/watch?v=oRkNaF0QvnI",
+  "https://www.youtube.com/watch?v=YCzL96nL7j0",
+  "https://www.youtube.com/watch?v=8L11aMN5KY8",
+];
 
 export default function LandingBody() {
   const [url, setUrl] = useState("");
   const [summary, setSummary] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hoveredTitle, setHoveredTitle] = useState("");
+  const [hoveredUrl, setHoveredUrl] = useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
@@ -36,10 +52,8 @@ export default function LandingBody() {
   };
 
   const fetchThumbnail = (videoUrl: string) => {
-    const videoId = new URL(videoUrl).searchParams.get("v");
-    if (videoId) {
-      setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
-    }
+    const thumbnail = getThumbnail(videoUrl);
+    setThumbnailUrl(thumbnail);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -59,12 +73,69 @@ export default function LandingBody() {
     }
   };
 
+  const handleThumbnailClick = async (exampleUrl: string) => {
+    setUrl(exampleUrl);
+    fetchThumbnail(exampleUrl);
+
+    // Simulate form submission
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/summarize?url=${encodeURIComponent(exampleUrl)}`
+      );
+      const {
+        summary: { content },
+      } = await response.json();
+      setSummary(content);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMouseEnter = async (exampleUrl: string) => {
+    const title = await getTitle(exampleUrl); // Implement getTitle to fetch the video title
+    setHoveredUrl(exampleUrl);
+    setHoveredTitle(title);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredTitle("");
+    setHoveredUrl("");
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      <h1 className="text-2xl mb-4">YouTube URL Summarizer</h1>
+    <main className="flex min-h-screen flex-col p-8">
+      <div className="flex flex-col mb-8 mx-auto">
+        <span className="text-center text-lg font-semibold">Examples</span>
+        <div className="animate-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
+          {examples.map((example) => (
+            <div key={example} className="relative cursor-pointer"
+              onMouseEnter={() => handleMouseEnter(example)}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleThumbnailClick(example)}
+            >
+              <img
+                className="max-w-[120px] sm:max-w-[240px] rounded-sm shadow-md cursor-pointer z-50"
+                src={getThumbnail(example)}
+                alt="thumbnail"
+              />
+              <div
+                className={`absolute bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${
+                  hoveredUrl === example ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {hoveredTitle}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md flex flex-col items-center"
+        className="w-full max-w-md flex flex-col items-center mx-auto"
       >
         <Input
           type="url"
@@ -73,16 +144,12 @@ export default function LandingBody() {
           onChange={handleInputChange}
           className="mb-4"
         />
-        <Button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Summarize"}
+        <Button type="submit" disabled={loading}>
+          Summarize
         </Button>
       </form>
       {thumbnailUrl && (
-        <div className="mt-4">
+        <div className="mt-4 mx-auto">
           <h3 className="text-lg mb-2 sr-only">Thumbnail</h3>
           <img
             src={thumbnailUrl}
@@ -91,7 +158,8 @@ export default function LandingBody() {
           />
         </div>
       )}
-      {summary && (
+      {loading && <Loader2 className="w-12 h-12 mx-auto mt-8 animate-spin" />}
+      {summary && !loading && (
         <div className="mt-8 p-4 border border-gray-300 rounded">
           <h2 className="text-xl mb-2">Summary</h2>
           <p>{summary}</p>
