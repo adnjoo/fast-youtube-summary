@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { getThumbnail } from "@/lib/utils";
+import { getThumbnail, getTitle } from "@/lib/utils";
 import { Example } from "./page";
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
@@ -16,6 +16,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [loading, setLoading] = useState(false);
   const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
   const [showExamples, setShowExamples] = useState(true);
+  const [thumbnailTitle, setThumbnailTitle] = useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
@@ -24,8 +25,12 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     // Fetch thumbnail URL when URL input changes
     if (isValidYouTubeUrl(newUrl)) {
       fetchThumbnail(newUrl);
+      getTitle(newUrl).then((title) => {
+        setThumbnailTitle(title);
+      });
     } else {
       setThumbnailUrl(""); // Clear thumbnail if URL is invalid
+      setThumbnailTitle("");
     }
   };
 
@@ -66,6 +71,10 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
   const handleThumbnailClick = async (exampleUrl: string) => {
     setUrl(exampleUrl);
+    fetchThumbnail(exampleUrl);
+    getTitle(exampleUrl).then((title) => {
+      setThumbnailTitle(title);
+    });
 
     // Simulate form submission
     try {
@@ -86,11 +95,11 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
   const handleMouseEnter = (example: Example) => {
     setHoveredExample(example);
-  }
+  };
 
   const handleMouseLeave = () => {
     setHoveredExample(null);
-  }
+  };
 
   return (
     <main className="flex min-h-screen flex-col p-8">
@@ -104,18 +113,22 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
           <span className="text-center text-lg font-semibold">Examples</span>
           <div className="animate-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
             {examples.map((example: Example) => (
-              <div key={example.url} className="relative cursor-pointer"
+              <div
+                key={example.url}
+                className="relative cursor-pointer"
                 onMouseEnter={() => handleMouseEnter(example)}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleThumbnailClick(example.url)}
               >
                 <img
-                  className='max-w-[120px] sm:max-w-[180px] rounded-sm shadow-md cursor-pointer z-50'
+                  className="max-w-[120px] sm:max-w-[180px] rounded-sm shadow-md cursor-pointer z-50"
                   src={example.thumbnail}
                   alt="thumbnail"
                 />
                 <div
-                  className={`absolute transition bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${example === hoveredExample ? 'opacity-100' : 'opacity-0'}`}
+                  className={`absolute transition bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${
+                    example === hoveredExample ? "opacity-100" : "opacity-0"
+                  }`}
                 >
                   {example.title}
                 </div>
@@ -136,7 +149,8 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
           onChange={handleInputChange}
           className="mb-4"
         />
-        <Button type="submit" disabled={loading}>
+
+        <Button type="submit" disabled={loading} className="relative">
           Summarize
         </Button>
       </form>
@@ -148,6 +162,9 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
             alt="YouTube Thumbnail"
             className="w-full h-auto max-w-md rounded"
           />
+          {thumbnailTitle && (
+            <div className="text-center text-xs mt-1">{thumbnailTitle}</div>
+          )}
         </div>
       )}
       {loading && <Loader2 className="w-12 h-12 mx-auto mt-8 animate-spin" />}
