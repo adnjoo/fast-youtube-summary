@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,8 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   );
   const [thumbnailTitle, setThumbnailTitle] = useState("");
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const storedValue = localStorage.getItem("showExamples");
     setShowExamples(storedValue ? Boolean(JSON.parse(storedValue)) : true);
@@ -30,6 +32,12 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       localStorage.setItem("showExamples", JSON.stringify(showExamples));
     }
   }, [showExamples]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
@@ -159,6 +167,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
           placeholder="Enter YouTube URL e.g. https://www.youtube.com/watch?v=62wEk02YKs0&pp=ygUIYmJjIG5ld3M%3D"
           value={url}
           onChange={handleInputChange}
+          ref={inputRef}
           className="mb-4"
         />
 
