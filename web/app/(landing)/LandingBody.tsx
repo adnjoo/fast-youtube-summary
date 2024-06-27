@@ -176,12 +176,12 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         </Button>
       </form>
       {thumbnailUrl && (
-        <div className="mt-4 mx-auto">
+        <div className="mt-4 mx-auto max-w-md">
           <h3 className="text-lg mb-2 sr-only">Thumbnail</h3>
           <img
             src={thumbnailUrl}
             alt="YouTube Thumbnail"
-            className="w-full h-auto max-w-md rounded"
+            className="w-full h-auto rounded"
           />
           {thumbnailTitle && (
             <div className="text-center text-xs mt-1">{thumbnailTitle}</div>
