@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -10,7 +12,11 @@ import { getThumbnail, getTitle } from "@/lib/utils";
 import { Example } from "./page";
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
-  const [url, setUrl] = useState("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialUrl = searchParams.get("url") || "";
+
+  const [url, setUrl] = useState(initialUrl);
   const [summary, setSummary] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,6 +44,20 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       inputRef.current.focus();
     }
   }, []);
+
+  useEffect(() => {
+    if (isValidYouTubeUrl(url)) {
+      fetchThumbnail(url);
+      getTitle(url).then((title) => {
+        setThumbnailTitle(title);
+      });
+
+      // set query
+      const params = new URLSearchParams();
+      params.set("url", url);
+      router.push(`?${params.toString()}`);
+    }
+  }, [url]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;

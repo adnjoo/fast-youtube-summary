@@ -1,5 +1,6 @@
 import LandingBody from "@/app/(landing)/LandingBody";
 import { getTitle, getThumbnail } from "@/lib/utils";
+import { Suspense } from "react";
 
 const examples = [
   "https://www.youtube.com/watch?v=ciW1ppBdkRc",
@@ -31,7 +32,9 @@ export default async function Home() {
   return (
     <main className="flex flex-col p-4 sm:p-24">
       <h1 className="text-4xl font-bold text-center">Fast Youtube Summary</h1>
-      <LandingBody examples={data} />
+      <Suspense fallback={null}>
+        <LandingBody examples={data} />
+      </Suspense>
     </main>
   );
 }
