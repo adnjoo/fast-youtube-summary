@@ -22,7 +22,8 @@ async function summarizeTranscript(transcript: string) {
   `;
 
   const response = await OPEN_AI.chat.completions.create({
-    model: "gpt-4o",
+    // model: "gpt-4o", // out of money
+    model: "gpt-3.5-turbo",
     messages: [
       {
         role: "system",
