@@ -56,6 +56,9 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       const params = new URLSearchParams();
       params.set("url", url);
       router.push(`?${params.toString()}`);
+
+      // Run summarize function if URL is present
+      handleSummarize(url);
     }
   }, [url]);
 
@@ -93,12 +96,12 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     setThumbnailUrl(thumbnail);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleSummarize = async (videoUrl: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/summarize?url=${encodeURIComponent(url)}`);
+      const response = await fetch(
+        `/summarize?url=${encodeURIComponent(videoUrl)}`
+      );
       const {
         summary: { content },
       } = await response.json();
@@ -110,6 +113,11 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     }
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSummarize(url);
+  };
+
   const handleThumbnailClick = async (exampleUrl: string) => {
     setUrl(exampleUrl);
     fetchThumbnail(exampleUrl);
@@ -117,21 +125,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       setThumbnailTitle(title);
     });
 
-    // Simulate form submission
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `/summarize?url=${encodeURIComponent(exampleUrl)}`
-      );
-      const {
-        summary: { content },
-      } = await response.json();
-      setSummary(content);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    handleSummarize(exampleUrl);
   };
 
   const handleMouseEnter = (example: Example) => {
