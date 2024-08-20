@@ -1,11 +1,33 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import { YoutubeTranscript } from "youtube-transcript";
+import { Innertube } from "youtubei.js/web";
+
+const fetchTranscript = async (
+  url: string
+): Promise<(string | undefined)[] | undefined> => {
+  const youtube = await Innertube.create({
+    lang: "en",
+    location: "US",
+    retrieve_player: false,
+  });
+
+  try {
+    const info = await youtube.getInfo(url);
+    const transcriptData = await info.getTranscript();
+    return transcriptData?.transcript?.content?.body?.initial_segments.map(
+      (segment) => segment.snippet.text
+    );
+  } catch (error) {
+    console.error("Error fetching transcript:", error);
+    throw error;
+  }
+};
 
 async function getYouTubeTranscript(videoUrl: string) {
   const videoId = new URL(videoUrl).searchParams.get("v") as string;
-  const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-  return transcript.map((item) => item.text).join(" ");
+  const transcript = await fetchTranscript(videoId);
+  // console.log("transcript", transcript);
+  return transcript?.join(" ");
 }
 
 async function summarizeTranscript(transcript: string) {
@@ -40,7 +62,7 @@ export async function GET(request: NextRequest, response: Response) {
   const url = searchParams.get("url") as string;
   // url is .. for /summarize?url=https://www.youtube.com/watch?v=62wEk02YKs0 // coffee and what it does ..
 
-  const transcript = await getYouTubeTranscript(url);
+  const transcript = await getYouTubeTranscript(url) as string;
   const summary = await summarizeTranscript(transcript);
 
   return new Response(JSON.stringify({ summary }));
