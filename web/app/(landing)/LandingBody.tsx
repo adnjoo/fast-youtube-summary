@@ -204,7 +204,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       )}
       {loading && <Loader2 className="w-12 h-12 mx-auto mt-8 animate-spin" />}
       {summary && !loading && (
-        <div className="mt-8 p-2 text-sm sm:text-base sm:p-4 border border-gray-300 rounded">
+        <div className="mt-8 p-2 mx-auto max-w-5xl text-sm sm:text-base sm:p-4 border border-gray-300 rounded">
           <h2 className="text-xl mb-2">Summary</h2>
           <p>{summary}</p>
         </div>
