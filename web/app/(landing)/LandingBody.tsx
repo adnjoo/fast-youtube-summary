@@ -81,15 +81,18 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const isValidYouTubeUrl = (url: string) => {
     try {
       const { hostname, pathname, searchParams } = new URL(url);
+  
       return (
-        (hostname === "www.youtube.com" || hostname === "youtube.com") &&
-        pathname === "/watch" &&
-        searchParams.has("v")
+        ((hostname === "www.youtube.com" || hostname === "youtube.com") &&
+          pathname === "/watch" &&
+          searchParams.has("v")) ||
+        (hostname === "youtu.be" && pathname.length > 1)
       );
     } catch (error) {
       return false;
     }
   };
+  
 
   const fetchThumbnail = (videoUrl: string) => {
     const thumbnail = getThumbnail(videoUrl);

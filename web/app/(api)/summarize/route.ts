@@ -24,10 +24,40 @@ const fetchTranscript = async (
 };
 
 async function getYouTubeTranscript(videoUrl: string) {
-  const videoId = new URL(videoUrl).searchParams.get("v") as string;
+  const videoId = extractVideoId(videoUrl); // Use helper to extract video ID
+
+  if (!videoId) {
+    throw new Error("Invalid video URL or missing video ID");
+  }
+
   const transcript = await fetchTranscript(videoId);
-  // console.log("transcript", transcript);
-  return transcript?.join(" ");
+
+  return transcript?.join(" ") || "Transcript not available";
+}
+
+// Helper function to extract video ID from different YouTube URL formats
+function extractVideoId(url: string): string | null {
+  try {
+    const parsedUrl = new URL(url);
+
+    // Handle shortened youtu.be URLs
+    if (parsedUrl.hostname === "youtu.be") {
+      return parsedUrl.pathname.slice(1); // Extract the video ID from the pathname
+    }
+
+    // Handle standard YouTube URLs
+    if (
+      parsedUrl.hostname === "www.youtube.com" ||
+      parsedUrl.hostname === "youtube.com"
+    ) {
+      return parsedUrl.searchParams.get("v");
+    }
+  } catch (e) {
+    console.error("Error extracting video ID:", e);
+    return null;
+  }
+
+  return null;
 }
 
 async function summarizeTranscript(transcript: string) {
@@ -62,7 +92,7 @@ export async function GET(request: NextRequest, response: Response) {
   const url = searchParams.get("url") as string;
   // url is .. for /summarize?url=https://www.youtube.com/watch?v=62wEk02YKs0 // coffee and what it does ..
 
-  const transcript = await getYouTubeTranscript(url) as string;
+  const transcript = (await getYouTubeTranscript(url)) as string;
   const summary = await summarizeTranscript(transcript);
 
   return new Response(JSON.stringify({ summary }));
