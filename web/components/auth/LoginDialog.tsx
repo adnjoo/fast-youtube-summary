@@ -59,13 +59,12 @@ export default function LoginDialog() {
               </Button>
             </div>
             <DialogFooter>
-              By signing in, you agree to
               <Link
                 href='/policies/terms'
                 target='_blank'
-                className='hover:underline ml-1' 
+                className='hover:underline'
               >
-                our terms and conditions.
+                By signing in, you agree to our terms and conditions.
               </Link>
             </DialogFooter>
           </DialogContent>
