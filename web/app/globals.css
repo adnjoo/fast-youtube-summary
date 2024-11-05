@@ -92,7 +92,7 @@
 
 /* Layout */
 .my-container {
-  @apply mx-auto my-2 px-4;
+  @apply mx-auto my-2 px-8;
   @apply max-w-6xl;
 }
 

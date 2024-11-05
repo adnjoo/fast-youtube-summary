@@ -32,7 +32,7 @@ export const Nav = async () => {
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 flex w-full items-center border-b bg-white shadow-sm dark:bg-gray-950/90'>
-      <div className='my-container mx-auto flex items-center justify-between px-4 w-full'>
+      <div className='my-container mx-auto flex items-center justify-between w-full'>
         {/* Sidebar Trigger for Mobile */}
         <Sheet>
           <SheetTrigger asChild>
@@ -67,7 +67,7 @@ export const Nav = async () => {
         </Sheet>
 
         {/* Logo */}
-        <Link href='/' className='hidden lg:flex items-center' prefetch={false}>
+        <Link href='/' className='ml-2 hidden lg:flex items-center' prefetch={false}>
           <Image src='/logo.png' alt='Logo' width={30} height={30} />
         </Link>
 
