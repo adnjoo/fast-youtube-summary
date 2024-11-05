@@ -89,3 +89,15 @@
     transform: translateY(0);
   }
 }
+
+/* Layout */
+.my-container {
+  @apply mx-auto my-2 px-4;
+  @apply max-w-6xl;
+}
+
+@screen xl {
+  .my-container {
+    @apply px-0;
+  }
+}
