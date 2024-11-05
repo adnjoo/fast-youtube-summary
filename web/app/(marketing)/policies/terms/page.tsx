@@ -77,11 +77,11 @@ export default function Terms() {
             <ul className='list-disc pl-6 text-sm text-gray-700'>
               <li>
                 <strong>Effective Date:</strong>{' '}
-                {formatISOToHumanReadable(AppConfig.TERMS_DATE)}
+                {formatISOToHumanReadable(AppConfig.ADMIN.TERMS_DATE)}
               </li>
               <li>
                 <strong>Last Updated:</strong>{' '}
-                {formatISOToHumanReadable(AppConfig.TERMS_DATE)}
+                {formatISOToHumanReadable(AppConfig.ADMIN.TERMS_DATE)}
               </li>
             </ul>
           </div>

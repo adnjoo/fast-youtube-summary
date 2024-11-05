@@ -1,5 +1,17 @@
 export const AppConfig = {
   APP_NAME: 'Fast Youtube Summary',
-  TERMS_DATE: '2024-11-05T13:28:51.860Z',
   CONTACT_EMAIL: 'support@fastyoutubesummary.com',
+  SITE_MAP: {
+    HOME: '/',
+    PRIVACY: '/policies/privacy',
+    TERMS: '/policies/terms',
+  },
+  SOCIAL: {
+    GITHUB: 'https://github.com/adnjoo/fast-youtube-summary',
+    X: 'https://x.com/adnjoo',
+  },
+  ADMIN: {
+    TERMS_DATE: '2024-11-05T13:28:51.860Z',
+    PRIVACY_DATE: '2024-11-05T13:28:51.860Z',
+  },
 };
