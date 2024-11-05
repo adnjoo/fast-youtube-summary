@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { AppConfig } from '@/lib/constants';
 import { useUser } from '@/lib/hooks/useUser';
 import { createClient } from '@/utils/supabase/client';
 
@@ -33,43 +34,43 @@ export default function LoginDialog() {
   };
 
   return (
-    <div>
+    <Dialog>
       {user ? (
         <p>Welcome, {user.email}</p>
       ) : (
-        <Dialog>
+        <>
           <DialogTrigger asChild>
             <Button variant='outline'>Sign In</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className='sm:max-w-[425px]'>
             <DialogHeader>
               <DialogTitle>Sign In</DialogTitle>
               <DialogDescription>
                 Sign in with your Google account to continue.
               </DialogDescription>
             </DialogHeader>
-            <div className='my-4 flex justify-center'>
+            <div className='flex items-center justify-center py-4'>
               <Button
                 onClick={handleGoogleLogin}
+                className='flex w-full items-center justify-center gap-2'
                 variant='outline'
-                className='flex w-full items-center justify-center space-x-2'
               >
                 <GoogleIcon className='h-6 w-6' />
-                <span>Sign In with Google</span>
+                Sign in with Google
               </Button>
             </div>
-            <DialogFooter>
+            <DialogFooter className='mt-4 text-center'>
               <Link
-                href='/policies/terms'
+                href={AppConfig.SITE_MAP.TERMS}
                 target='_blank'
-                className='hover:underline'
+                className='text-sm hover:underline'
               >
                 By signing in, you agree to our terms and conditions.
               </Link>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </>
       )}
-    </div>
+    </Dialog>
   );
 }

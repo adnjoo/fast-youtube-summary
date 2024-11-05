@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { createClient } from '@/utils/supabase/server';
+import { AppConfig } from '@/lib/constants';
 
 export const Nav = async () => {
   const supabase = await createClient();
@@ -49,7 +50,16 @@ export const Nav = async () => {
                   className='flex items-center py-2 text-lg font-semibold'
                   prefetch={false}
                 >
-                  <Image src='/logo.png' alt='Logo' width={30} height={30} />
+                  Home
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href={AppConfig.SITE_MAP.PRIVACY}
+                  className='flex items-center py-2 text-lg font-semibold'
+                  prefetch={false}
+                >
+                  Privacy
                 </Link>
               </SheetClose>
             </div>
