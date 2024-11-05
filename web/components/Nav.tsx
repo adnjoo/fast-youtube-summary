@@ -55,11 +55,11 @@ export const Nav = async () => {
               </SheetClose>
               <SheetClose asChild>
                 <Link
-                  href={AppConfig.SITE_MAP.PRIVACY}
+                  href={AppConfig.SITE_MAP.HISTORY}
                   className='flex items-center py-2 text-lg font-semibold'
                   prefetch={false}
                 >
-                  Privacy
+                  History
                 </Link>
               </SheetClose>
             </div>
