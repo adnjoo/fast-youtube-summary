@@ -89,3 +89,25 @@
     transform: translateY(0);
   }
 }
+
+/* Layout */
+.my-container {
+  @apply mx-auto my-2 px-8;
+  @apply max-w-6xl;
+}
+
+@screen xl {
+  .my-container {
+    @apply px-0;
+  }
+}
+
+/* Prevent layout shift on Dialog */
+html {
+  overflow-y: scroll;
+}
+body {
+  width: 100vw;
+  overflow-x: hidden;
+  padding-right: calc(0 - var(--removed-body-scroll-bar-size)) !important;
+}

@@ -30,7 +30,7 @@ export type Example = {
 export default async function Home() {
   const data = await getData();
   return (
-    <main className="flex flex-col p-4 sm:p-24">
+    <main className="flex flex-col py-4 sm:py-24">
       <h1 className="text-4xl font-bold text-center">Fast Youtube Summary</h1>
       <Suspense fallback={null}>
         <LandingBody examples={data} />
