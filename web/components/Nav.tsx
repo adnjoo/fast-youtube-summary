@@ -1,14 +1,17 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/xYHqD5MkVkT
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { FaBars } from 'react-icons/fa6';
 
 import LoginDialog from '@/components/auth/LoginDialog';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { createClient } from '@/utils/supabase/server';
 
 export const Nav = async () => {
@@ -27,33 +30,54 @@ export const Nav = async () => {
   };
 
   return (
-    <nav className='fixed inset-x-0 top-0 z-50 bg-white shadow-sm dark:bg-gray-950/90'>
-      <div className='my-container w-full'>
-        <div className='flex items-center justify-between'>
-          <Link href='/' className='flex items-center' prefetch={false}>
-            <Image
-              src='/logo.png'
-              alt='Logo'
-              width={30}
-              height={30}
-              className='mx-auto'
-            />
-          </Link>
-          <nav className='hidden gap-4 md:flex'></nav>
-          <div className='flex items-center gap-4'>
-            {user ? (
-              <div className='flex items-center gap-4'>
-                <span className='hidden md:block'>Hey, {user.email}!</span>
-                <form action={signOut}>
-                  <Button variant='default'>Logout</Button>
-                </form>
-              </div>
-            ) : (
-              <LoginDialog />
-            )}
-          </div>
+    <header className='fixed inset-x-0 top-0 z-50 flex w-full items-center border-b bg-white shadow-sm dark:bg-gray-950/90'>
+      <div className='my-container mx-auto flex items-center justify-between px-4 w-full'>
+        {/* Sidebar Trigger for Mobile */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant='outline' size='icon' className='lg:hidden'>
+              <FaBars className='h-6 w-6' />
+              <span className='sr-only'>Toggle navigation menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side='left'>
+            <SheetTitle className='hidden'>Menu</SheetTitle>
+            <div className='py-6'>
+              <SheetClose asChild>
+                <Link
+                  href='/'
+                  className='flex items-center py-2 text-lg font-semibold'
+                  prefetch={false}
+                >
+                  <Image src='/logo.png' alt='Logo' width={30} height={30} />
+                </Link>
+              </SheetClose>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Logo */}
+        <Link href='/' className='hidden lg:flex items-center' prefetch={false}>
+          <Image src='/logo.png' alt='Logo' width={30} height={30} />
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className='hidden gap-6 lg:flex'></nav>
+
+        {/* Authentication Button */}
+        <div className='flex items-center gap-4'>
+          {user ? (
+            <div className='flex items-center gap-4'>
+              <span className='hidden md:block'>Hey, {user.email}!</span>
+              <form action={signOut}>
+                <Button variant='default'>Logout</Button>
+              </form>
+            </div>
+          ) : (
+            <LoginDialog />
+          )}
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
