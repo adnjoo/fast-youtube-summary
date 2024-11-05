@@ -87,7 +87,7 @@ async function summarizeTranscript(transcript: string) {
   return response.choices[0].message;
 }
 
-export async function GET(request: NextRequest, response: Response) {
+export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const url = searchParams.get("url") as string;
   // url is .. for /summarize?url=https://www.youtube.com/watch?v=62wEk02YKs0 // coffee and what it does ..
@@ -95,5 +95,9 @@ export async function GET(request: NextRequest, response: Response) {
   const transcript = (await getYouTubeTranscript(url)) as string;
   const summary = await summarizeTranscript(transcript);
 
-  return new Response(JSON.stringify({ summary }));
+  return new Response(JSON.stringify({ summary }), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
