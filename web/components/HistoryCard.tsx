@@ -2,15 +2,12 @@
 import Link from 'next/link';
 
 import { Card } from '@/components/ui/card';
-import { Tables } from '@/db/database.types';
+import { History } from '@/db/databse.types';
 import { getThumbnail } from '@/lib/utils';
 import { formatISOToHumanReadable } from '@/lib/utils/formatISOToHumanReadable';
 
-// Use the type for a row in the history table
-type HistoryItem = Tables<'history'>;
-
 interface HistoryCardProps {
-  item: HistoryItem;
+  item: History;
 }
 
 export default function HistoryCard({ item }: HistoryCardProps) {
