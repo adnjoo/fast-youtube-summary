@@ -24,7 +24,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [summary, setSummary] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
   const [showExamples, setShowExamples] = useState<boolean | undefined>(
     undefined
   );
@@ -154,14 +153,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     handleSummarize(exampleUrl);
   };
 
-  const handleMouseEnter = (example: Example) => {
-    setHoveredExample(example);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredExample(null);
-  };
-
   return (
     <main className='mt-4 flex min-h-screen flex-col sm:p-8'>
       <div className='mx-auto mb-8 flex items-center'>
@@ -178,9 +169,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
             {examples.map((example: Example) => (
               <div
                 key={example.url}
-                className='relative cursor-pointer'
-                onMouseEnter={() => handleMouseEnter(example)}
-                onMouseLeave={handleMouseLeave}
+                className='group relative cursor-pointer'
                 onClick={() => handleThumbnailClick(example.url)}
               >
                 <img
@@ -188,11 +177,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
                   src={example.thumbnail}
                   alt='thumbnail'
                 />
-                <div
-                  className={`absolute bottom-0 left-0 z-0 w-full bg-black bg-opacity-75 p-1 text-center text-xs text-white transition ${
-                    example === hoveredExample ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
+                <div className='absolute bottom-0 left-0 z-0 w-full bg-black bg-opacity-75 p-1 text-center text-xs text-white opacity-0 transition-opacity group-hover:opacity-100'>
                   {example.title}
                 </div>
               </div>
