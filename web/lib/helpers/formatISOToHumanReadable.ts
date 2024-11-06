@@ -1,4 +1,4 @@
-export function formatISOToHumanReadable(isoDate: string) {
+export function formatISOToHumanReadable(isoDate: string): string {
   const date = new Date(isoDate);
 
   return date.toLocaleString('en-US', {

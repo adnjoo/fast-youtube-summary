@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { History } from '@/db/databse.types';
 import { getThumbnail } from '@/lib/utils';
-import { formatISOToHumanReadable } from '@/lib/utils/formatISOToHumanReadable';
+import { formatISOToHumanReadable } from '@/lib/helpers';
 
 export default function HistoryCard({ item }: { item: History }) {
   return (
