@@ -28,20 +28,28 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [showExamples, setShowExamples] = useState<boolean | undefined>(
     undefined
   );
+  const [saveHistory, setSaveHistory] = useState<boolean | undefined>(
+    undefined
+  );
   const [thumbnailTitle, setThumbnailTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const storedValue = localStorage.getItem('showExamples');
-    setShowExamples(storedValue ? Boolean(JSON.parse(storedValue)) : true);
+    const showExamplesStored = localStorage.getItem('showExamples');
+    const saveHistoryStored = localStorage.getItem('saveHistory');
+    setShowExamples(showExamplesStored ? JSON.parse(showExamplesStored) : true);
+    setSaveHistory(saveHistoryStored ? JSON.parse(saveHistoryStored) : false);
   }, []);
 
   useEffect(() => {
     if (typeof showExamples === 'boolean') {
       localStorage.setItem('showExamples', JSON.stringify(showExamples));
     }
-  }, [showExamples]);
+    if (typeof saveHistory === 'boolean') {
+      localStorage.setItem('saveHistory', JSON.stringify(saveHistory));
+    }
+  }, [showExamples, saveHistory]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -56,12 +64,10 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         setThumbnailTitle(title);
       });
 
-      // set query
       const params = new URLSearchParams();
       params.set('url', url);
       router.push(`?${params.toString()}`);
 
-      // Run summarize function if URL is present
       handleSummarize(url);
     }
   }, [url]);
@@ -70,14 +76,13 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     const newUrl = event.target.value;
     setUrl(newUrl);
 
-    // Fetch thumbnail URL when URL input changes
     if (isValidYouTubeUrl(newUrl)) {
       fetchThumbnail(newUrl);
       getTitle(newUrl).then((title) => {
         setThumbnailTitle(title);
       });
     } else {
-      setThumbnailUrl(''); // Clear thumbnail if URL is invalid
+      setThumbnailUrl('');
       setThumbnailTitle('');
     }
   };
@@ -85,7 +90,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const isValidYouTubeUrl = (url: string) => {
     try {
       const { hostname, pathname, searchParams } = new URL(url);
-
       return (
         ((hostname === 'www.youtube.com' || hostname === 'youtube.com') &&
           pathname === '/watch' &&
@@ -110,12 +114,30 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       );
       const { summary } = await response.json();
       setSummary(summary);
+
+      if (saveHistory) {
+        await saveSummaryHistory(videoUrl, summary);
+      }
     } catch (error) {
-      console.error("Error processing summary:", error);
+      console.error('Error processing summary:', error);
     } finally {
       setLoading(false);
     }
-  };  
+  };
+
+  const saveSummaryHistory = async (videoUrl: string, summary: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('summaries')
+        .insert([{ url: videoUrl, summary, user_id: user?.id }]);
+
+      if (error) {
+        console.error('Error saving summary:', error);
+      }
+    } catch (error) {
+      console.error('Error saving summary:', error);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -145,6 +167,9 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       <div className='mx-auto mb-8 flex items-center'>
         <span className='mr-2 text-lg font-semibold'>Show Examples</span>
         <Switch checked={showExamples} onCheckedChange={setShowExamples} />
+
+        <span className='ml-6 mr-2 text-lg font-semibold'>Save History</span>
+        <Switch checked={saveHistory} onCheckedChange={setSaveHistory} />
       </div>
 
       {showExamples && (
