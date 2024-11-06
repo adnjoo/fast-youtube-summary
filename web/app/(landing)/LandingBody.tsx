@@ -9,10 +9,9 @@ import { type Example } from '@/app/(landing)/page';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
 import { useUser } from '@/lib/hooks/useUser';
-import { getThumbnail, getTitle } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
-import { isValidYouTubeUrl } from '@/lib/helpers';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
   const searchParams = useSearchParams();
@@ -113,16 +112,14 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
   const saveSummaryHistory = async (videoUrl: string, summary: string) => {
     try {
-    const { error } = await supabase
-      .from('summaries')
-      .insert([{ url: videoUrl, summary, user_id: user?.id }]);
+      const { error } = await supabase
+        .from('summaries')
+        .insert([{ url: videoUrl, summary, user_id: user?.id }]);
 
-    if (error) throw new Error(`Supabase error: ${error.message}`);
-
-  } catch (error) {
-    console.log('Error saving summary:', error);
-  }
-
+      if (error) throw new Error(`Supabase error: ${error.message}`);
+    } catch (error) {
+      console.log('Error saving summary:', error);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
