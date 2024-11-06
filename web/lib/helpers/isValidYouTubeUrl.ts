@@ -1,3 +1,13 @@
+/**
+ * Validates if a given URL is a valid YouTube URL.
+ * 
+ * This function checks if the URL is from either youtube.com or youtu.be domains.
+ * For youtube.com, it ensures the path is '/watch' and there is a 'v' parameter in the query string.
+ * For youtu.be, it checks if the path is not empty, as video IDs are directly appended to the path.
+ * 
+ * @param {string} url - The URL to be validated.
+ * @returns {boolean} - Returns true if the URL is a valid YouTube URL, false otherwise.
+ */
 export const isValidYouTubeUrl = (url: string): boolean => {
   try {
     const { hostname, pathname, searchParams } = new URL(url);
