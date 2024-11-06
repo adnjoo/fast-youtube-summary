@@ -5,6 +5,7 @@ export const AppConfig = {
     HOME: '/',
     PRIVACY: '/policies/privacy',
     TERMS: '/policies/terms',
+    HISTORY: '/history',
   },
   SOCIAL: {
     GITHUB: 'https://github.com/adnjoo/fast-youtube-summary',
