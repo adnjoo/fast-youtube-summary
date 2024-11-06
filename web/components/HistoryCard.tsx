@@ -6,11 +6,7 @@ import { History } from '@/db/databse.types';
 import { getThumbnail } from '@/lib/utils';
 import { formatISOToHumanReadable } from '@/lib/utils/formatISOToHumanReadable';
 
-interface HistoryCardProps {
-  item: History;
-}
-
-export default function HistoryCard({ item }: HistoryCardProps) {
+export default function HistoryCard({ item }: { item: History }) {
   return (
     <Card className='flex w-full flex-row rounded-lg border border-gray-100 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
       <div className='flex w-64 flex-col'>
