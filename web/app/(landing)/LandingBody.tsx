@@ -1,41 +1,45 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { getThumbnail, getTitle } from "@/lib/utils";
-import { Example } from "./page";
+import { type Example } from '@/app/(landing)/page';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { useUser } from '@/lib/hooks/useUser';
+import { getThumbnail, getTitle } from '@/lib/utils';
+import { createClient } from '@/utils/supabase/client';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialUrl = searchParams.get("url") || "";
+  const initialUrl = searchParams.get('url') || '';
+  const user = useUser();
+  const supabase = createClient();
 
   const [url, setUrl] = useState(initialUrl);
-  const [summary, setSummary] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [summary, setSummary] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [hoveredExample, setHoveredExample] = useState<Example | null>(null);
   const [showExamples, setShowExamples] = useState<boolean | undefined>(
     undefined
   );
-  const [thumbnailTitle, setThumbnailTitle] = useState("");
+  const [thumbnailTitle, setThumbnailTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const storedValue = localStorage.getItem("showExamples");
+    const storedValue = localStorage.getItem('showExamples');
     setShowExamples(storedValue ? Boolean(JSON.parse(storedValue)) : true);
   }, []);
 
   useEffect(() => {
-    if (typeof showExamples === "boolean") {
-      localStorage.setItem("showExamples", JSON.stringify(showExamples));
+    if (typeof showExamples === 'boolean') {
+      localStorage.setItem('showExamples', JSON.stringify(showExamples));
     }
   }, [showExamples]);
 
@@ -54,7 +58,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
       // set query
       const params = new URLSearchParams();
-      params.set("url", url);
+      params.set('url', url);
       router.push(`?${params.toString()}`);
 
       // Run summarize function if URL is present
@@ -73,26 +77,25 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         setThumbnailTitle(title);
       });
     } else {
-      setThumbnailUrl(""); // Clear thumbnail if URL is invalid
-      setThumbnailTitle("");
+      setThumbnailUrl(''); // Clear thumbnail if URL is invalid
+      setThumbnailTitle('');
     }
   };
 
   const isValidYouTubeUrl = (url: string) => {
     try {
       const { hostname, pathname, searchParams } = new URL(url);
-  
+
       return (
-        ((hostname === "www.youtube.com" || hostname === "youtube.com") &&
-          pathname === "/watch" &&
-          searchParams.has("v")) ||
-        (hostname === "youtu.be" && pathname.length > 1)
+        ((hostname === 'www.youtube.com' || hostname === 'youtube.com') &&
+          pathname === '/watch' &&
+          searchParams.has('v')) ||
+        (hostname === 'youtu.be' && pathname.length > 1)
       );
     } catch (error) {
       return false;
     }
   };
-  
 
   const fetchThumbnail = (videoUrl: string) => {
     const thumbnail = getThumbnail(videoUrl);
@@ -105,16 +108,14 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       const response = await fetch(
         `/summarize?url=${encodeURIComponent(videoUrl)}`
       );
-      const {
-        summary: { content },
-      } = await response.json();
-      setSummary(content);
+      const { summary } = await response.json();
+      setSummary(summary);
     } catch (error) {
-      console.error(error);
+      console.error("Error processing summary:", error);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -140,31 +141,31 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   };
 
   return (
-    <main className="mt-4 flex min-h-screen flex-col sm:p-8">
-      <div className="flex items-center mb-8 mx-auto">
-        <span className="mr-2 text-lg font-semibold">Show Examples</span>
+    <main className='mt-4 flex min-h-screen flex-col sm:p-8'>
+      <div className='mx-auto mb-8 flex items-center'>
+        <span className='mr-2 text-lg font-semibold'>Show Examples</span>
         <Switch checked={showExamples} onCheckedChange={setShowExamples} />
       </div>
 
       {showExamples && (
-        <div className="flex flex-col mb-8 mx-auto">
-          <div className="animate-in grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mx-auto">
+        <div className='mx-auto mb-8 flex flex-col'>
+          <div className='mx-auto mb-8 grid grid-cols-2 gap-4 animate-in lg:grid-cols-3'>
             {examples.map((example: Example) => (
               <div
                 key={example.url}
-                className="relative cursor-pointer"
+                className='relative cursor-pointer'
                 onMouseEnter={() => handleMouseEnter(example)}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleThumbnailClick(example.url)}
               >
                 <img
-                  className="max-w-[120px] sm:max-w-[180px] rounded-sm shadow-md cursor-pointer z-50"
+                  className='z-50 max-w-[120px] cursor-pointer rounded-sm shadow-md sm:max-w-[180px]'
                   src={example.thumbnail}
-                  alt="thumbnail"
+                  alt='thumbnail'
                 />
                 <div
-                  className={`absolute transition bottom-0 left-0 w-full bg-black bg-opacity-75 text-white text-center text-xs p-1 z-0 ${
-                    example === hoveredExample ? "opacity-100" : "opacity-0"
+                  className={`absolute bottom-0 left-0 z-0 w-full bg-black bg-opacity-75 p-1 text-center text-xs text-white transition ${
+                    example === hoveredExample ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
                   {example.title}
@@ -177,38 +178,38 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md flex flex-col items-center mx-auto"
+        className='mx-auto flex w-full max-w-md flex-col items-center'
       >
         <Input
-          type="url"
-          placeholder="Enter YouTube URL e.g. https://www.youtube.com/watch?v=62wEk02YKs0&pp=ygUIYmJjIG5ld3M%3D"
+          type='url'
+          placeholder='Enter YouTube URL e.g. https://www.youtube.com/watch?v=62wEk02YKs0&pp=ygUIYmJjIG5ld3M%3D'
           value={url}
           onChange={handleInputChange}
           ref={inputRef}
-          className="mb-4"
+          className='mb-4'
         />
 
-        <Button type="submit" disabled={loading} className="relative">
+        <Button type='submit' disabled={loading} className='relative'>
           Summarize
         </Button>
       </form>
       {thumbnailUrl && (
-        <div className="mt-4 mx-auto max-w-md">
-          <h3 className="text-lg mb-2 sr-only">Thumbnail</h3>
+        <div className='mx-auto mt-4 max-w-md'>
+          <h3 className='sr-only mb-2 text-lg'>Thumbnail</h3>
           <img
             src={thumbnailUrl}
-            alt="YouTube Thumbnail"
-            className="w-full h-auto rounded"
+            alt='YouTube Thumbnail'
+            className='h-auto w-full rounded'
           />
           {thumbnailTitle && (
-            <div className="text-center text-xs mt-1">{thumbnailTitle}</div>
+            <div className='mt-1 text-center text-xs'>{thumbnailTitle}</div>
           )}
         </div>
       )}
-      {loading && <Loader2 className="w-12 h-12 mx-auto mt-8 animate-spin" />}
+      {loading && <Loader2 className='mx-auto mt-8 h-12 w-12 animate-spin' />}
       {summary && !loading && (
-        <div className="mt-8 p-2 mx-auto max-w-5xl text-sm sm:text-base sm:p-4 border border-gray-300 rounded">
-          <h2 className="text-xl mb-2">Summary</h2>
+        <div className='mx-auto mt-8 max-w-5xl rounded border border-gray-300 p-2 text-sm sm:p-4 sm:text-base'>
+          <h2 className='mb-2 text-xl'>Summary</h2>
           <p>{summary}</p>
         </div>
       )}
