@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { useUser } from '@/lib/hooks/useUser';
 import { getThumbnail, getTitle } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
+import { isValidYouTubeUrl } from '@/lib/helpers';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
   const searchParams = useSearchParams();
@@ -86,20 +87,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     }
   };
 
-  const isValidYouTubeUrl = (url: string) => {
-    try {
-      const { hostname, pathname, searchParams } = new URL(url);
-      return (
-        ((hostname === 'www.youtube.com' || hostname === 'youtube.com') &&
-          pathname === '/watch' &&
-          searchParams.has('v')) ||
-        (hostname === 'youtu.be' && pathname.length > 1)
-      );
-    } catch (error) {
-      return false;
-    }
-  };
-
   const fetchThumbnail = (videoUrl: string) => {
     const thumbnail = getThumbnail(videoUrl);
     setThumbnailUrl(thumbnail);
@@ -126,16 +113,16 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
 
   const saveSummaryHistory = async (videoUrl: string, summary: string) => {
     try {
-      const { data, error } = await supabase
-        .from('summaries')
-        .insert([{ url: videoUrl, summary, user_id: user?.id }]);
+    const { error } = await supabase
+      .from('summaries')
+      .insert([{ url: videoUrl, summary, user_id: user?.id }]);
 
-      if (error) {
-        console.error('Error saving summary:', error);
-      }
-    } catch (error) {
-      console.error('Error saving summary:', error);
-    }
+    if (error) throw new Error(`Supabase error: ${error.message}`);
+
+  } catch (error) {
+    console.log('Error saving summary:', error);
+  }
+
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
