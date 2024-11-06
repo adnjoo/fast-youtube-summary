@@ -159,8 +159,14 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         <span className='mr-2 text-lg font-semibold'>Show Examples</span>
         <Switch checked={showExamples} onCheckedChange={setShowExamples} />
 
-        <span className='ml-6 mr-2 text-lg font-semibold'>Save History</span>
-        <Switch checked={saveHistory} onCheckedChange={setSaveHistory} />
+        {user ? (
+          <>
+            <span className='ml-6 mr-2 text-lg font-semibold'>
+              Save History
+            </span>
+            <Switch checked={saveHistory} onCheckedChange={setSaveHistory} />
+          </>
+        ) : null}
       </div>
 
       {showExamples && (

@@ -12,8 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { createClient } from '@/utils/supabase/server';
 import { AppConfig } from '@/lib/constants';
+import { createClient } from '@/utils/supabase/server';
 
 export const Nav = async () => {
   const supabase = await createClient();
@@ -32,7 +32,7 @@ export const Nav = async () => {
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 flex w-full items-center border-b bg-white shadow-sm dark:bg-gray-950/90'>
-      <div className='my-container mx-auto flex items-center justify-between w-full'>
+      <div className='my-container mx-auto flex w-full items-center justify-between'>
         {/* Sidebar Trigger for Mobile */}
         <Sheet>
           <SheetTrigger asChild>
@@ -41,6 +41,18 @@ export const Nav = async () => {
               <span className='sr-only'>Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
+
+          {/* Logo as Sheet Trigger */}
+          <SheetTrigger asChild>
+            <Image
+              className='ml-2 hidden items-center lg:flex'
+              src='/logo.png'
+              alt='Logo'
+              width={30}
+              height={30}
+            />
+          </SheetTrigger>
+
           <SheetContent side='left'>
             <SheetTitle className='hidden'>Menu</SheetTitle>
             <div className='py-6'>
@@ -53,23 +65,20 @@ export const Nav = async () => {
                   Home
                 </Link>
               </SheetClose>
-              <SheetClose asChild>
-                <Link
-                  href={AppConfig.SITE_MAP.HISTORY}
-                  className='flex items-center py-2 text-lg font-semibold'
-                  prefetch={false}
-                >
-                  History
-                </Link>
-              </SheetClose>
+              {user ? (
+                <SheetClose asChild>
+                  <Link
+                    href={AppConfig.SITE_MAP.HISTORY}
+                    className='flex items-center py-2 text-lg font-semibold'
+                    prefetch={false}
+                  >
+                    History
+                  </Link>
+                </SheetClose>
+              ) : null}
             </div>
           </SheetContent>
         </Sheet>
-
-        {/* Logo */}
-        <Link href='/' className='ml-2 hidden lg:flex items-center' prefetch={false}>
-          <Image src='/logo.png' alt='Logo' width={30} height={30} />
-        </Link>
 
         {/* Desktop Navigation */}
         <nav className='hidden gap-6 lg:flex'></nav>
