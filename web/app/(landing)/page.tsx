@@ -1,5 +1,5 @@
 import LandingBody from "@/app/(landing)/LandingBody";
-import { getTitle, getThumbnail } from "@/lib/utils";
+import { getTitle, getThumbnail } from "@/lib/helpers";
 import { Suspense } from "react";
 
 const examples = [

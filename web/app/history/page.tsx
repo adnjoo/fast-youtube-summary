@@ -1,14 +1,10 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import HistoryCard from '@/components/HistoryCard';
-import { Card } from '@/components/ui/card';
 import { useUser } from '@/lib/hooks/useUser';
-import { getThumbnail } from '@/lib/utils';
-import { formatISOToHumanReadable } from '@/lib/utils/formatISOToHumanReadable';
 import { createClient } from '@/utils/supabase/client';
 
 export default function Page() {

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { AppConfig } from '@/lib/constants';
-import { formatISOToHumanReadable } from '@/lib/utils/formatISOToHumanReadable';
+import { formatISOToHumanReadable } from '@/lib/helpers';
 
 export default function Terms() {
   return (
