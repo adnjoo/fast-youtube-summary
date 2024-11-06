@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 
-import { Footer } from '@/components/Footer';
-import { Nav } from '@/components/Nav';
+import { Footer } from '@/components/layout/Footer';
+import { Nav } from '@/components/layout/Nav';
 
 import './globals.css';
 
