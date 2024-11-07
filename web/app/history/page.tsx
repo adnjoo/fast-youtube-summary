@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
 import HistoryCard from '@/components/HistoryCard';
@@ -21,7 +21,11 @@ export default function Page() {
     return data;
   }
 
-  const { data: history, isLoading, refetch } = useQuery({
+  const {
+    data: history,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['history'],
     queryFn: fetchHistory,
   });
@@ -37,9 +41,9 @@ export default function Page() {
   });
 
   return (
-    <div className='container mx-auto max-w-4xl px-4 py-12'>
-      <h2 className='text-xl font-semibold'>History</h2>
-      <section className='p-4'>
+    <div className='container mx-auto max-w-4xl p-4 sm:py-12'>
+      <h2 className='text-xl font-semibold mb-4'>History</h2>
+      <section className='flex flex-col gap-4 sm:p-4'>
         {!user ? (
           <p className='text-gray-500'>
             You must be logged in to view your history.

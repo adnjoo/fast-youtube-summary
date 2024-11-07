@@ -37,7 +37,7 @@ export default function HistoryCard({
   };
 
   return (
-    <Card className='flex w-full flex-col rounded-lg border border-gray-100 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md md:flex-row'>
+    <Card className='flex w-full flex-col rounded-lg border border-gray-100 px-2 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:px-4 md:flex-row'>
       <div className='flex w-full flex-col md:w-64'>
         <Link
           href={item.url}
@@ -64,7 +64,7 @@ export default function HistoryCard({
         </details>
         <p className='hidden text-gray-700 md:block'>{item.summary}</p>
       </div>
-      <div className='mt-4 flex flex-col gap-4 md:ml-4 md:mt-0'>
+      <div className='mt-4 flex gap-4 sm:flex-col md:ml-4 md:mt-0'>
         <button
           onClick={handleDeleteClick}
           disabled={isDeleting}
