@@ -1,41 +1,31 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import HistoryCard from '@/components/HistoryCard';
 import { useUser } from '@/lib/hooks/useUser';
-import { createClient } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 
 export default function Page() {
-  const supabase = createClient();
   const user = useUser();
-  const [history, setHistory] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (user) {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('history')
-          .select()
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+  async function fetchHistory() {
+    const { data, error } = await supabase
+      .from('history')
+      .select()
+      .eq('user_id', user?.id)
+      .order('created_at', { ascending: false });
 
-        if (error) {
-          console.error('Error fetching history:', error);
-        } else {
-          setHistory(data || []);
-        }
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
-    };
+    if (error) throw new Error(error.message);
+    return data;
+  }
 
-    fetchHistory();
-  }, [user]);
+  const {
+    data: history,
+    isLoading,
+    refetch,
+  } = useQuery({ queryKey: ['history'], queryFn: fetchHistory });
 
   return (
     <div className='container mx-auto max-w-4xl px-4 py-12'>
@@ -45,15 +35,13 @@ export default function Page() {
           <p className='text-gray-500'>
             You must be logged in to view your history.
           </p>
-        ) : loading ? (
+        ) : isLoading ? (
           <div className='flex justify-center'>
             <Loader2 className='animate-spin text-gray-500' />
           </div>
-        ) : history.length > 0 ? (
+        ) : history && history.length > 0 ? (
           history.map((item) => (
-            <div key={item.id} className='mb-4'>
-              <HistoryCard item={item} />
-            </div>
+            <HistoryCard item={item} key={item.id} onDelete={() => refetch()} />
           ))
         ) : (
           <p className='text-gray-500'>No history available.</p>
