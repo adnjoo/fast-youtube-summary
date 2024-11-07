@@ -33,7 +33,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [thumbnailTitle, setThumbnailTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const isMobile = useCheckMobile();
 
   useEffect(() => {
     const showExamplesStored = localStorage.getItem('showExamples');
@@ -50,12 +49,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       localStorage.setItem('saveHistory', JSON.stringify(saveHistory));
     }
   }, [showExamples, saveHistory]);
-
-  useEffect(() => {
-    if (inputRef.current && !isMobile) {
-      inputRef.current.focus();
-    }
-  }, [isMobile]);
 
   useEffect(() => {
     if (isValidYouTubeUrl(url)) {
