@@ -71,6 +71,18 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     }
   }, [url]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === '/') {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
     setUrl(newUrl);
