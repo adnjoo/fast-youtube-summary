@@ -42,16 +42,16 @@ export const Nav = async () => {
             </Button>
           </SheetTrigger>
 
-          {/* Logo as Sheet Trigger */}
-          <SheetTrigger asChild>
-            <Image
-              className='ml-2 hidden items-center lg:flex'
+          {/* Logo  */}
+          <Link href='/'>
+            <img
+              className='ml-2 cursor-pointer items-center lg:flex'
               src='/logo.png'
               alt='Logo'
               width={30}
               height={30}
             />
-          </SheetTrigger>
+          </Link>
 
           <SheetContent side='left'>
             <SheetTitle className='hidden'>Menu</SheetTitle>
@@ -81,13 +81,21 @@ export const Nav = async () => {
         </Sheet>
 
         {/* Desktop Navigation */}
-        <nav className='hidden gap-6 lg:flex'></nav>
+        <nav className='hidden gap-6 lg:flex'>
+          {user ? (
+            <Link
+              href={AppConfig.SITE_MAP.HISTORY}
+              className='flex items-center text-sm font-medium transition-colors hover:underline'
+            >
+              History
+            </Link>
+          ) : null}
+        </nav>
 
         {/* Authentication Button */}
-        <div className='flex items-center gap-4'>
+        <div className='-mr-4 flex items-center gap-4 sm:-mr-2'>
           {user ? (
             <div className='flex items-center gap-4'>
-              <span className='hidden md:block'>Hey, {user.email}!</span>
               <form action={signOut}>
                 <Button variant='default'>Logout</Button>
               </form>
