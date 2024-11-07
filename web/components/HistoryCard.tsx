@@ -12,7 +12,7 @@ import { useCopyToClipboard } from '@/lib/hooks';
 
 export const copyUrl = (url: string) => `${AppConfig.SITE_URL}/?url=${url}`;
 
-export default function HistoryCard({
+export function HistoryCard({
   item,
   onDelete,
 }: {

@@ -4,10 +4,10 @@ import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import HistoryCard from '@/components/HistoryCard';
+import { HistoryCard } from '@/components/HistoryCard';
+import { Button } from '@/components/ui';
 import { useUser } from '@/lib/hooks/useUser';
 import { supabase } from '@/utils/supabase/client';
-import { Button } from '@/components/ui';
 
 export default function Page() {
   const user = useUser();
@@ -28,9 +28,7 @@ export default function Page() {
 
     if (error) throw new Error(error.message);
 
-    // Set total pages based on count
     if (count) setTotalPages(Math.ceil(count / pageSize));
-
     return data;
   }
 
@@ -41,7 +39,7 @@ export default function Page() {
   } = useQuery({
     queryKey: ['history', page],
     queryFn: fetchHistory,
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation<void, Error, number>({
@@ -56,7 +54,7 @@ export default function Page() {
 
   return (
     <div className='container mx-auto max-w-4xl p-4 sm:py-12'>
-      <h2 className='text-xl font-semibold mb-4'>History</h2>
+      <h2 className='mb-4 text-xl font-semibold'>History</h2>
       <section className='flex flex-col gap-4 sm:p-4'>
         {!user ? (
           <p className='text-gray-500'>
@@ -79,17 +77,29 @@ export default function Page() {
         )}
       </section>
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <Button
-              key={i + 1}
-              onClick={() => setPage(i + 1)}
-              disabled={page === i + 1}
-              className={page === i + 1 ? 'bg-blue-500' : ''}
-            >
-              {i + 1}
-            </Button>
-          ))}
+        <div className='mt-4 flex justify-center gap-2'>
+          <Button onClick={() => setPage(1)} disabled={page === 1}>
+            First
+          </Button>
+          <Button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
+          <span className='px-4 py-2'>{`Page ${page} of ${totalPages}`}</span>
+          <Button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+          >
+            Next
+          </Button>
+          <Button
+            onClick={() => setPage(totalPages)}
+            disabled={page === totalPages}
+          >
+            Last
+          </Button>
         </div>
       )}
     </div>
