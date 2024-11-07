@@ -10,12 +10,7 @@ import { getThumbnail } from '@/lib/helpers';
 import { formatISOToHumanReadable } from '@/lib/helpers';
 import { createClient } from '@/utils/supabase/client';
 
-export type HistoryCardProps = {
-  item: History;
-  onDelete: (id: number) => void;
-};
-
-export default function HistoryCard({ item, onDelete }: HistoryCardProps) {
+export default function HistoryCard({ item }: { item: History }) {
   const supabase = createClient();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -33,8 +28,6 @@ export default function HistoryCard({ item, onDelete }: HistoryCardProps) {
 
       if (error) {
         console.error('Error deleting history item:', error);
-      } else {
-        onDelete(item.id); // Call the parent delete handler to remove the item from the list
       }
     } catch (error) {
       console.error('Error deleting history item:', error);
