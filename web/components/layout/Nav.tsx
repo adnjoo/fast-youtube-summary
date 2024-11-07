@@ -4,14 +4,14 @@ import { redirect } from 'next/navigation';
 import { FaBars } from 'react-icons/fa6';
 
 import LoginDialog from '@/components/auth/LoginDialog';
-import { Button } from '@/components/ui/button';
 import {
+  Button,
   Sheet,
   SheetClose,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '@/components/ui';
 import { AppConfig } from '@/lib/constants';
 import { createClient } from '@/utils/supabase/server';
 
