@@ -1,6 +1,7 @@
 export const AppConfig = {
   APP_NAME: 'Fast Youtube Summary',
   CONTACT_EMAIL: 'support@fastyoutubesummary.com',
+  SITE_URL: 'https://fastyoutubesummary.com',
   SITE_MAP: {
     HOME: '/',
     PRIVACY: '/policies/privacy',
