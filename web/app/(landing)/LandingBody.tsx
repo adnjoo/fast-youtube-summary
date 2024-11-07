@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
-import { useUser } from '@/lib/hooks/useUser';
+import { useCheckMobile, useUser } from '@/lib/hooks';
 import { createClient } from '@/utils/supabase/client';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
@@ -33,6 +33,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   const [thumbnailTitle, setThumbnailTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useCheckMobile();
 
   useEffect(() => {
     const showExamplesStored = localStorage.getItem('showExamples');
@@ -51,10 +52,10 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   }, [showExamples, saveHistory]);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isMobile) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (isValidYouTubeUrl(url)) {
@@ -78,7 +79,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         inputRef.current?.focus();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
