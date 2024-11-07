@@ -212,7 +212,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         </div>
       )}
       {loading && <Loader2 className='mx-auto mt-8 h-12 w-12 animate-spin' />}
-      <SummaryCard summary={summary} loading={loading} />
+      <SummaryCard summary={summary} loading={loading} url={url} />
     </main>
   );
 }
