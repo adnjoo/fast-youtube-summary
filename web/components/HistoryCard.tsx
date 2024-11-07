@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import { FiShare2, FiTrash2 } from 'react-icons/fi';
 
 import { Card } from '@/components/ui/card';
 import { History } from '@/db/database.types';
+import { AppConfig } from '@/lib/constants';
 import { getThumbnail } from '@/lib/helpers';
 import { formatISOToHumanReadable } from '@/lib/helpers';
 
@@ -15,11 +16,23 @@ export default function HistoryCard({
   onDelete: () => void;
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const handleDeleteClick = () => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       setIsDeleting(true);
       onDelete();
+    }
+  };
+
+  const handleCopyClick = async () => {
+    const copyUrl = `${AppConfig.SITE_URL}/?url=${item.url}`;
+    try {
+      await navigator.clipboard.writeText(copyUrl);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000); // Message disappears after 2 seconds
+    } catch (error) {
+      console.error('Failed to copy URL:', error);
     }
   };
 
@@ -51,14 +64,28 @@ export default function HistoryCard({
         </details>
         <p className='hidden text-gray-700 md:block'>{item.summary}</p>
       </div>
-      <button
-        onClick={handleDeleteClick}
-        disabled={isDeleting}
-        className='mt-4 flex items-center text-red-500 hover:text-red-700 md:ml-4 md:mt-0'
-        aria-label='Delete'
-      >
-        {isDeleting ? 'Deleting...' : <FiTrash2 size={18} />}
-      </button>
+      <div className='mt-4 flex flex-col gap-4 md:ml-4 md:mt-0'>
+        <button
+          onClick={handleDeleteClick}
+          disabled={isDeleting}
+          className='flex items-center text-red-500 hover:text-red-700'
+          aria-label='Delete'
+        >
+          {isDeleting ? 'Deleting...' : <FiTrash2 size={18} />}
+        </button>
+        <button
+          onClick={handleCopyClick}
+          className='flex items-center text-blue-500 hover:text-blue-700'
+          aria-label='Copy URL'
+        >
+          <FiShare2 size={18} />
+        </button>
+        {copySuccess && (
+          <div className='fixed bottom-10 right-10 rounded-lg bg-green-500 px-4 py-2 text-sm text-white opacity-100 shadow-lg transition-opacity duration-300 animate-in'>
+            URL copied to clipboard!
+          </div>
+        )}
+      </div>
     </Card>
   );
 }

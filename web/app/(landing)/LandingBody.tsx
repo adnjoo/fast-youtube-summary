@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
-import { useCheckMobile, useUser } from '@/lib/hooks';
+import { useUser } from '@/lib/hooks';
 import { createClient } from '@/utils/supabase/client';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
