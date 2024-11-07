@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
 import HistoryCard from '@/components/HistoryCard';
@@ -21,11 +21,20 @@ export default function Page() {
     return data;
   }
 
-  const {
-    data: history,
-    isLoading,
-    refetch,
-  } = useQuery({ queryKey: ['history'], queryFn: fetchHistory });
+  const { data: history, isLoading, refetch } = useQuery({
+    queryKey: ['history'],
+    queryFn: fetchHistory,
+  });
+
+  const deleteMutation = useMutation<void, Error, number>({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase.from('history').delete().eq('id', id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
   return (
     <div className='container mx-auto max-w-4xl px-4 py-12'>
@@ -41,7 +50,11 @@ export default function Page() {
           </div>
         ) : history && history.length > 0 ? (
           history.map((item) => (
-            <HistoryCard item={item} key={item.id} onDelete={() => refetch()} />
+            <HistoryCard
+              item={item}
+              key={item.id}
+              onDelete={() => deleteMutation.mutate(item.id)}
+            />
           ))
         ) : (
           <p className='text-gray-500'>No history available.</p>

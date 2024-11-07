@@ -1,4 +1,3 @@
-// components/history/HistoryCard.tsx
 import Link from 'next/link';
 import { useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
@@ -7,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import { History } from '@/db/database.types';
 import { getThumbnail } from '@/lib/helpers';
 import { formatISOToHumanReadable } from '@/lib/helpers';
-import { createClient } from '@/utils/supabase/client';
 
 export default function HistoryCard({
   item,
@@ -18,21 +16,10 @@ export default function HistoryCard({
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
-    setIsDeleting(true);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from('history')
-        .delete()
-        .eq('id', item.id);
-      if (error) console.error('Error deleting history item:', error);
-      else onDelete();
-    } catch (error) {
-      console.error('Error deleting history item:', error);
-    } finally {
-      setIsDeleting(false);
+  const handleDeleteClick = () => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      setIsDeleting(true);
+      onDelete();
     }
   };
 
@@ -55,7 +42,6 @@ export default function HistoryCard({
           className='mt-2 h-auto w-full rounded-md md:w-64'
         />
       </div>
-      {/* Conditional rendering for summary: accordion on mobile, visible text on larger screens */}
       <div className='ml-0 mt-4 w-full text-xs md:ml-4 md:mt-0'>
         <details className='md:hidden'>
           <summary className='cursor-pointer text-blue-600'>
@@ -66,7 +52,7 @@ export default function HistoryCard({
         <p className='hidden text-gray-700 md:block'>{item.summary}</p>
       </div>
       <button
-        onClick={handleDelete}
+        onClick={handleDeleteClick}
         disabled={isDeleting}
         className='mt-4 flex items-center text-red-500 hover:text-red-700 md:ml-4 md:mt-0'
         aria-label='Delete'
