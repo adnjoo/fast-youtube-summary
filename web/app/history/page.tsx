@@ -13,19 +13,24 @@ export default function Page() {
   const user = useUser();
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [totalPages, setTotalPages] = useState(0);
 
   async function fetchHistory() {
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from('history')
-      .select()
+      .select('*', { count: 'exact' }) // Get total count for pagination
       .eq('user_id', user?.id)
       .order('created_at', { ascending: false })
       .range(start, end);
 
     if (error) throw new Error(error.message);
+
+    // Set total pages based on count
+    if (count) setTotalPages(Math.ceil(count / pageSize));
+
     return data;
   }
 
@@ -36,7 +41,7 @@ export default function Page() {
   } = useQuery({
     queryKey: ['history', page],
     queryFn: fetchHistory,
-    placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData
   });
 
   const deleteMutation = useMutation<void, Error, number>({
@@ -73,20 +78,18 @@ export default function Page() {
           <p className='text-gray-500'>No history available.</p>
         )}
       </section>
-      {history && history.length > 0 && (
-        <div className="flex justify-between mt-4">
-          <Button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-          >
-            Previous
-          </Button>
-          <Button
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={history.length < pageSize}
-          >
-            Next
-          </Button>
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <Button
+              key={i + 1}
+              onClick={() => setPage(i + 1)}
+              disabled={page === i + 1}
+              className={page === i + 1 ? 'bg-blue-500' : ''}
+            >
+              {i + 1}
+            </Button>
+          ))}
         </div>
       )}
     </div>
