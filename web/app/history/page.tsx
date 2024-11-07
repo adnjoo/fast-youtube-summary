@@ -1,21 +1,29 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 import HistoryCard from '@/components/HistoryCard';
 import { useUser } from '@/lib/hooks/useUser';
 import { supabase } from '@/utils/supabase/client';
+import { Button } from '@/components/ui';
 
 export default function Page() {
   const user = useUser();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   async function fetchHistory() {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize - 1;
+
     const { data, error } = await supabase
       .from('history')
       .select()
       .eq('user_id', user?.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(start, end);
 
     if (error) throw new Error(error.message);
     return data;
@@ -26,8 +34,9 @@ export default function Page() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['history'],
+    queryKey: ['history', page],
     queryFn: fetchHistory,
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation<void, Error, number>({
@@ -64,6 +73,22 @@ export default function Page() {
           <p className='text-gray-500'>No history available.</p>
         )}
       </section>
+      {history && history.length > 0 && (
+        <div className="flex justify-between mt-4">
+          <Button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={history.length < pageSize}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
