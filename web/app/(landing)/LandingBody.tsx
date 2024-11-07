@@ -6,9 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { type Example } from '@/app/(landing)/page';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { Button, Input, Switch } from '@/components/ui';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
 import { useUser } from '@/lib/hooks';
 import { createClient } from '@/utils/supabase/client';
