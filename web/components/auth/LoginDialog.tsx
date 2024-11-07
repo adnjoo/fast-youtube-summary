@@ -3,8 +3,8 @@
 import Link from 'next/link';
 
 import { GoogleIcon } from '@/components/icons/GoogleIcon';
-import { Button } from '@/components/ui/button';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/ui';
 import { AppConfig } from '@/lib/constants';
 import { useUser } from '@/lib/hooks/useUser';
 import { createClient } from '@/utils/supabase/client';

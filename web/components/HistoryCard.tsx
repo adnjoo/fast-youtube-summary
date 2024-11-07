@@ -2,11 +2,15 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { FiShare2, FiTrash2 } from 'react-icons/fi';
 
+import { Notification } from '@/components/layout/Notification';
 import { Card } from '@/components/ui/card';
 import { History } from '@/db/database.types';
 import { AppConfig } from '@/lib/constants';
 import { getThumbnail } from '@/lib/helpers';
 import { formatISOToHumanReadable } from '@/lib/helpers';
+import { useCopyToClipboard } from '@/lib/hooks';
+
+export const copyUrl = (url: string) => `${AppConfig.SITE_URL}/?url=${url}`;
 
 export default function HistoryCard({
   item,
@@ -16,23 +20,12 @@ export default function HistoryCard({
   onDelete: () => void;
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
+  const { copySuccess, handleCopyClick } = useCopyToClipboard();
 
   const handleDeleteClick = () => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       setIsDeleting(true);
       onDelete();
-    }
-  };
-
-  const handleCopyClick = async () => {
-    const copyUrl = `${AppConfig.SITE_URL}/?url=${item.url}`;
-    try {
-      await navigator.clipboard.writeText(copyUrl);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000); // Message disappears after 2 seconds
-    } catch (error) {
-      console.error('Failed to copy URL:', error);
     }
   };
 
@@ -74,18 +67,14 @@ export default function HistoryCard({
           {isDeleting ? 'Deleting...' : <FiTrash2 size={18} />}
         </button>
         <button
-          onClick={handleCopyClick}
+          onClick={() => handleCopyClick(copyUrl)}
           className='flex items-center text-blue-500 hover:text-blue-700'
           aria-label='Copy URL'
         >
           <FiShare2 size={18} />
         </button>
-        {copySuccess && (
-          <div className='fixed bottom-10 right-10 rounded-lg bg-green-500 px-4 py-2 text-sm text-white opacity-100 shadow-lg transition-opacity duration-300 animate-in'>
-            URL copied to clipboard!
-          </div>
-        )}
       </div>
+      <Notification isVisible={copySuccess} />
     </Card>
   );
 }

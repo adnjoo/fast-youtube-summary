@@ -6,9 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { type Example } from '@/app/(landing)/page';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { SummaryCard } from '@/components/SummaryCard';
+import { Button, Input, Switch } from '@/components/ui';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
 import { useUser } from '@/lib/hooks';
 import { createClient } from '@/utils/supabase/client';
@@ -213,12 +212,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         </div>
       )}
       {loading && <Loader2 className='mx-auto mt-8 h-12 w-12 animate-spin' />}
-      {summary && !loading && (
-        <div className='mx-auto mt-8 max-w-5xl rounded border border-gray-300 p-2 text-sm sm:p-4 sm:text-base'>
-          <h2 className='mb-2 text-xl'>Summary</h2>
-          <p>{summary}</p>
-        </div>
-      )}
+      <SummaryCard summary={summary} loading={loading} url={url} />
     </main>
   );
 }
