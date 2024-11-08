@@ -38,7 +38,7 @@ export default async function Home() {
   const data = await getData();
   return (
     <main className="flex flex-col py-4 sm:py-24">
-      <h1 className="text-4xl font-bold text-center">Fast Youtube Summary</h1>
+      <h1 className="text-4xl font-bold text-center">SummaTube</h1>
       <Suspense fallback={null}>
         <LandingBody examples={data} />
       </Suspense>

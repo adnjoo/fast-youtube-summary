@@ -1,4 +1,4 @@
-# Fast YouTube Summary
+# SummaTube
 
 Summarizes Youtube videos fast + free
 
@@ -9,12 +9,12 @@ To install, follow these steps:
 
 1. Clone the repository:
     ```
-    git clone https://github.com/adnjoo/fast-youtube-summary.git
+    git clone https://github.com/adnjoo/summa-tube.git
     ```
 
 2. Navigate to the project web folder:
     ```
-    cd fast-youtube-summary/web
+    cd summa-tube/web
     ```
 
 3. Make `.env` file like:

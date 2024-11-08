@@ -1,8 +1,8 @@
 export const AppConfig = {
-  APP_NAME: 'Fast YouTube Summary',
+  APP_NAME: 'SummaTube',
   APP_DESCRIPTION: 'Summarize YouTube videos for free',
-  CONTACT_EMAIL: 'support@fastyoutubesummary.com',
-  SITE_URL: 'https://fastyoutubesummary.com',
+  CONTACT_EMAIL: 'support@summa.tube',
+  SITE_URL: 'https://summa.tube',
   SITE_MAP: {
     HOME: '/',
     PRIVACY: '/policies/privacy',
@@ -10,7 +10,7 @@ export const AppConfig = {
     HISTORY: '/history',
   },
   SOCIAL: {
-    GITHUB: 'https://github.com/adnjoo/fast-youtube-summary',
+    GITHUB: 'https://github.com/adnjoo/summa-tube',
     X: 'https://x.com/adnjoo',
   },
   ADMIN: {
