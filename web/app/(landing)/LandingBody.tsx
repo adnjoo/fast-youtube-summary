@@ -11,14 +11,12 @@ import { SummaryCard } from '@/components/SummaryCard';
 import { Button, Input, Switch } from '@/components/ui';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
 import { useUser } from '@/lib/hooks';
-import { createClient } from '@/utils/supabase/client';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialUrl = searchParams.get('url') || '';
   const user = useUser();
-  const supabase = createClient();
 
   const [url, setUrl] = useState(initialUrl);
   const [summary, setSummary] = useState('');
@@ -113,11 +111,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleSummarize(url);
-  };
-
   const handleThumbnailClick = async (exampleUrl: string) => {
     setUrl(exampleUrl);
     fetchThumbnail(exampleUrl);
@@ -166,7 +159,10 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       )}
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e: any)=>{
+          e.preventDefault();
+          handleSummarize(url);
+        }}
         className='mx-auto flex w-full max-w-md flex-col items-center'
       >
         <Input
