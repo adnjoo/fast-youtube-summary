@@ -10,7 +10,7 @@ export const AppConfig = {
     HISTORY: '/history',
   },
   SOCIAL: {
-    GITHUB: 'https://github.com/adnjoo/summa-tube',
+    GITHUB: 'https://github.com/adnjoo/summatube',
     X: 'https://x.com/adnjoo',
   },
   ADMIN: {
