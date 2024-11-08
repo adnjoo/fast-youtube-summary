@@ -1,4 +1,4 @@
-# Summa Tube
+# SummaTube
 
 Summarizes Youtube videos fast + free
 
