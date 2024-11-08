@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { type Example } from '@/app/(landing)/page';
+import { Marquee } from '@/components/Marquee';
 import { SummaryCard } from '@/components/SummaryCard';
 import { Button, Input, Switch } from '@/components/ui';
 import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
@@ -159,26 +160,24 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       </div>
 
       {showExamples && (
-        <div className='mx-auto mb-8 flex flex-col'>
-          <div className='mx-auto mb-8 grid grid-cols-2 gap-4 animate-in lg:grid-cols-3'>
-            {examples.map((example: Example) => (
-              <div
-                key={example.url}
-                className='group relative cursor-pointer'
-                onClick={() => handleThumbnailClick(example.url)}
-              >
-                <img
-                  className='z-50 max-w-[120px] cursor-pointer rounded-sm shadow-md sm:max-w-[180px]'
-                  src={example.thumbnail}
-                  alt='thumbnail'
-                />
-                <div className='absolute bottom-0 left-0 z-0 w-full bg-black bg-opacity-75 p-1 text-center text-xs text-white opacity-0 transition-opacity group-hover:opacity-100'>
-                  {example.title}
-                </div>
+        <Marquee>
+          {examples.map((example: Example) => (
+            <div
+              key={example.url}
+              className='group relative cursor-pointer'
+              onClick={() => handleThumbnailClick(example.url)}
+            >
+              <img
+                className='z-50 max-w-[120px] cursor-pointer rounded-sm shadow-md sm:max-w-[180px]'
+                src={example.thumbnail}
+                alt='thumbnail'
+              />
+              <div className='absolute bottom-0 left-0 z-0 w-full bg-black bg-opacity-75 p-1 text-center text-xs text-white opacity-0 transition-opacity group-hover:opacity-100'>
+                {example.title}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          ))}
+        </Marquee>
       )}
 
       <form

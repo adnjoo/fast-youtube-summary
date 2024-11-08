@@ -121,7 +121,7 @@ body {
 
 .marquee-content {
   display: inline-flex;
-  animation: scroll 180s linear infinite; /* Slower animation duration */
+  animation: scroll 120s linear infinite; /* Slower animation duration */
 }
 
 @keyframes scroll {
