@@ -1,5 +1,6 @@
 import LandingBody from "@/app/(landing)/LandingBody";
 import { getThumbnail } from "@/lib/helpers";
+import { getURL } from "@/lib/helpers/getURL";
 import { createClient } from "@/utils/supabase/server";
 import { Suspense } from "react";
 
@@ -10,7 +11,7 @@ async function getData(): Promise<Example[]> {
   // Fetch the latest 5 summaries (only URLs) from Supabase
   const { data, error } = await supabase
     .from('history')
-    .select('url, title')
+    .select('video_id, title')
     .order('created_at', { ascending: false })
     .limit(7);
 
@@ -20,8 +21,9 @@ async function getData(): Promise<Example[]> {
   }
 
   const summaries = await Promise.all(
-    data.map(async ({ url, title}) => {
-      const thumbnail = getThumbnail(url);
+    data.map(async ({ video_id, title}) => {
+      const thumbnail = getThumbnail(video_id);
+      const url = getURL(video_id);
       return { url, thumbnail, title };
     })
   );
