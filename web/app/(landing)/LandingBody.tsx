@@ -101,30 +101,15 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `/summarize?url=${encodeURIComponent(videoUrl)}`
+        `/summarize?url=${encodeURIComponent(videoUrl)}&save=${saveHistory}`
       );
       const { summary } = await response.json();
       setSummary(summary);
 
-      if (saveHistory) {
-        await saveSummaryHistory(videoUrl, summary);
-      }
     } catch (error) {
       console.error('Error processing summary:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const saveSummaryHistory = async (videoUrl: string, summary: string) => {
-    try {
-      const { error } = await supabase
-        .from('summaries')
-        .insert([{ url: videoUrl, summary, user_id: user?.id }]);
-
-      if (error) throw new Error(`Supabase error: ${error.message}`);
-    } catch (error) {
-      console.log('Error saving summary:', error);
     }
   };
 
