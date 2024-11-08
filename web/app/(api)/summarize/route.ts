@@ -1,32 +1,9 @@
 import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
-import { Innertube } from 'youtubei.js/web';
 
 import { extractVideoId } from '@/lib/helpers';
 import { createClient } from '@/utils/supabase/server';
-
-const fetchTranscript = async (url: string) => {
-  const youtube = await Innertube.create({
-    lang: 'en',
-    location: 'US',
-    retrieve_player: false,
-  });
-
-  try {
-    const info = await youtube.getInfo(url);
-    const title = info.primary_info?.title.text;
-    const transcriptData = await info.getTranscript();
-    const transcript =
-      transcriptData?.transcript?.content?.body?.initial_segments.map(
-        (segment) => segment.snippet.text
-      );
-
-    return { title, transcript };
-  } catch (error) {
-    console.error('Error fetching transcript:', error);
-    throw error;
-  }
-};
+import { fetchTranscript } from './fetchTranscript';
 
 async function getYouTubeTranscript(videoUrl: string) {
   const videoId = extractVideoId(videoUrl); // Use helper to extract video ID
