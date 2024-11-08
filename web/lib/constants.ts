@@ -1,5 +1,6 @@
 export const AppConfig = {
-  APP_NAME: 'Fast Youtube Summary',
+  APP_NAME: 'Fast YouTube Summary',
+  APP_DESCRIPTION: 'Summarize YouTube videos for free',
   CONTACT_EMAIL: 'support@fastyoutubesummary.com',
   SITE_URL: 'https://fastyoutubesummary.com',
   SITE_MAP: {

@@ -1,4 +1,3 @@
-import { QueryClientProvider } from '@tanstack/react-query';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
@@ -6,6 +5,7 @@ import { Inter } from 'next/font/google';
 
 import { Footer } from '@/components/layout/Footer';
 import { Nav } from '@/components/layout/Nav';
+import { AppConfig } from '@/lib/constants';
 import Providers from '@/utils/rq/queryClient';
 
 import './globals.css';
@@ -13,8 +13,18 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Fast Youtube Summary',
-  description: 'Summarize YouTube videos for free',
+  title: AppConfig.APP_NAME,
+  description: AppConfig.APP_DESCRIPTION,
+  twitter: {
+    card: 'summary_large_image',
+    site: AppConfig.SOCIAL.X,
+    title: AppConfig.APP_NAME,
+    creator: AppConfig.SOCIAL.X,
+    images: {
+      url: `${AppConfig.SITE_URL}/x-image.png`,
+      alt: AppConfig.APP_NAME,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
