@@ -67,7 +67,7 @@ export function HistoryCard({
           {isDeleting ? 'Deleting...' : <FiTrash2 size={18} />}
         </button>
         <button
-          onClick={() => handleCopyClick(copyUrl)}
+          onClick={() => handleCopyClick(copyUrl(item.url))}
           className='flex items-center text-blue-500 hover:text-blue-700'
           aria-label='Copy URL'
         >
