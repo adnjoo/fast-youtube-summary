@@ -1,16 +1,24 @@
-export function extractVideoId(videoUrl: string): string | null {
+// Helper function to extract video ID from different YouTube URL formats
+export function extractVideoId(url: string): string | null {
   try {
-    const url = new URL(videoUrl);
+    const parsedUrl = new URL(url);
 
-    if (url.hostname === 'youtu.be') {
-      return url.pathname.slice(1);
-    }
-    if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com') {
-      return url.searchParams.get('v');
+    // Handle shortened youtu.be URLs
+    if (parsedUrl.hostname === 'youtu.be') {
+      return parsedUrl.pathname.slice(1); // Extract the video ID from the pathname
     }
 
-    return null; // Unsupported domain
-  } catch {
+    // Handle standard YouTube URLs
+    if (
+      parsedUrl.hostname === 'www.youtube.com' ||
+      parsedUrl.hostname === 'youtube.com'
+    ) {
+      return parsedUrl.searchParams.get('v');
+    }
+  } catch (e) {
+    console.error('Error extracting video ID:', e);
     return null;
   }
+
+  return null;
 }

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
 import { Innertube } from 'youtubei.js/web';
 
+import { extractVideoId } from '@/lib/helpers';
 import { createClient } from '@/utils/supabase/server';
 
 const fetchTranscript = async (url: string) => {
@@ -40,31 +41,6 @@ async function getYouTubeTranscript(videoUrl: string) {
     title: title || 'Title not available',
     transcript: transcript?.join(' ') || 'Transcript not available',
   };
-}
-
-// Helper function to extract video ID from different YouTube URL formats
-function extractVideoId(url: string): string | null {
-  try {
-    const parsedUrl = new URL(url);
-
-    // Handle shortened youtu.be URLs
-    if (parsedUrl.hostname === 'youtu.be') {
-      return parsedUrl.pathname.slice(1); // Extract the video ID from the pathname
-    }
-
-    // Handle standard YouTube URLs
-    if (
-      parsedUrl.hostname === 'www.youtube.com' ||
-      parsedUrl.hostname === 'youtube.com'
-    ) {
-      return parsedUrl.searchParams.get('v');
-    }
-  } catch (e) {
-    console.error('Error extracting video ID:', e);
-    return null;
-  }
-
-  return null;
 }
 
 async function summarizeTranscript(transcript: string): Promise<string | null> {
