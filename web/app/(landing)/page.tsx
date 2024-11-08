@@ -1,40 +1,31 @@
 import LandingBody from "@/app/(landing)/LandingBody";
 import { getTitle, getThumbnail } from "@/lib/helpers";
-import { createClient } from "@/utils/supabase/client";
 import { Suspense } from "react";
+
+const examples = [
+  "https://www.youtube.com/watch?v=ciW1ppBdkRc",
+  "https://www.youtube.com/watch?v=KlFXl--H8eM",
+  "https://www.youtube.com/watch?v=YpZff07df-Q",
+  "https://www.youtube.com/watch?v=62wEk02YKs0",
+  "https://www.youtube.com/watch?v=YCzL96nL7j0",
+];
+
+async function getData(): Promise<Example[]> {
+  const data = await Promise.all(
+    examples.map(async (url) => {
+      const thumbnail = getThumbnail(url);
+      const title = await getTitle(url);
+      return { url, thumbnail, title };
+    })
+  );
+  return data;
+}
 
 export type Example = {
   url: string;
   thumbnail: string;
   title: string;
 };
-
-async function getData(): Promise<Example[]> {
-  const supabase = createClient();
-
-  // Fetch the latest 5 summaries (only URLs) from Supabase
-  const { data, error } = await supabase
-    .from('history')
-    .select('url')
-    .order('created_at', { ascending: false })
-    .limit(5);
-
-  if (error) {
-    console.error("Error fetching summaries:", error);
-    return [];
-  }
-
-  // Fetch thumbnail and title for each URL
-  const summaries = await Promise.all(
-    data.map(async ({ url }) => {
-      const thumbnail = getThumbnail(url);
-      const title = await getTitle(url);
-      return { url, thumbnail, title };
-    })
-  );
-
-  return summaries;
-}
 
 export default async function Home() {
   const data = await getData();
