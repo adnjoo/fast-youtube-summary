@@ -146,7 +146,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   return (
     <main className='mt-4 flex min-h-screen flex-col sm:p-8'>
       <div className='mx-auto mb-8 flex items-center'>
-        <span className='mr-2 text-lg font-semibold'>Show Examples</span>
+        <span className='mr-2 text-lg font-semibold'>Show Latest</span>
         <Switch checked={showExamples} onCheckedChange={setShowExamples} />
 
         {user ? (
