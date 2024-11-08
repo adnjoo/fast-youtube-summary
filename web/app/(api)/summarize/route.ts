@@ -96,6 +96,7 @@ async function summarizeTranscript(transcript: string): Promise<string | null> {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const url = searchParams.get('url') as string;
+  const save = searchParams.get('save') === 'true'; // Check if 'save' is set to 'true'
   const supabase = await createClient();
 
   // Fetch the authenticated user
@@ -148,15 +149,17 @@ export async function GET(request: NextRequest) {
     const { title, transcript } = await getYouTubeTranscript(url);
     const summary = await summarizeTranscript(transcript);
 
-    // Step 3: Save the new summary to history (if user is logged in)
-    const insertData: any = { url, title, summary };
-    if (userId) insertData.user_id = userId;
+    // Step 3: Save the new summary to history (if save)
+    if (save) {
+      const insertData: any = { url, title, summary };
+      if (userId) insertData.user_id = userId;
 
-    const { error: insertError } = await supabase
-      .from('history')
-      .insert(insertData);
-    if (insertError) {
-      console.error('Error saving to history:', insertError);
+      const { error: insertError } = await supabase
+        .from('history')
+        .insert(insertData);
+      if (insertError) {
+        console.error('Error saving to history:', insertError);
+      }
     }
 
     // Return the newly generated summary
