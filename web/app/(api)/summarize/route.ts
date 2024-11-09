@@ -1,40 +1,16 @@
 import { NextRequest } from 'next/server';
-import OpenAI from 'openai';
-import { Innertube } from 'youtubei.js/web';
 
 import { createClient } from '@/utils/supabase/server';
 
-const fetchTranscript = async (url: string) => {
-  const youtube = await Innertube.create({
-    lang: 'en',
-    location: 'US',
-    retrieve_player: false,
-  });
+import { fetchTranscript } from './fetchTranscript';
+import { summarizeTranscript } from './summarizeTranscript';
 
-  try {
-    const info = await youtube.getInfo(url);
-    const title = info.primary_info?.title.text;
-    const transcriptData = await info.getTranscript();
-    const transcript =
-      transcriptData?.transcript?.content?.body?.initial_segments.map(
-        (segment) => segment.snippet.text
-      );
-
-    return { title, transcript };
-  } catch (error) {
-    console.error('Error fetching transcript:', error);
-    throw error;
-  }
-};
-
-async function getYouTubeTranscript(videoUrl: string) {
-  const videoId = extractVideoId(videoUrl); // Use helper to extract video ID
-
-  if (!videoId) {
+async function getYouTubeTranscript(video_id: string) {
+  if (!video_id) {
     throw new Error('Invalid video URL or missing video ID');
   }
 
-  const { title, transcript } = await fetchTranscript(videoId);
+  const { title, transcript } = await fetchTranscript(video_id);
 
   return {
     title: title || 'Title not available',
@@ -42,60 +18,9 @@ async function getYouTubeTranscript(videoUrl: string) {
   };
 }
 
-// Helper function to extract video ID from different YouTube URL formats
-function extractVideoId(url: string): string | null {
-  try {
-    const parsedUrl = new URL(url);
-
-    // Handle shortened youtu.be URLs
-    if (parsedUrl.hostname === 'youtu.be') {
-      return parsedUrl.pathname.slice(1); // Extract the video ID from the pathname
-    }
-
-    // Handle standard YouTube URLs
-    if (
-      parsedUrl.hostname === 'www.youtube.com' ||
-      parsedUrl.hostname === 'youtube.com'
-    ) {
-      return parsedUrl.searchParams.get('v');
-    }
-  } catch (e) {
-    console.error('Error extracting video ID:', e);
-    return null;
-  }
-
-  return null;
-}
-
-async function summarizeTranscript(transcript: string): Promise<string | null> {
-  const OPEN_AI = new OpenAI({
-    apiKey: process.env.OPENAI_KEY,
-  });
-
-  const prompt = `
-  Summarize the following YouTube transcript, start with in this Youtube video, and end with in conclusion {conclusion}
-
-  ${transcript}
-
-  Summary:
-  `;
-
-  const response = await OPEN_AI.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'system',
-        content: prompt,
-      },
-    ],
-  });
-
-  return response.choices[0].message.content;
-}
-
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const url = searchParams.get('url') as string;
+  const video_id = searchParams.get('video_id') as string;
   const save = searchParams.get('save') === 'true'; // Check if 'save' is set to 'true'
   const supabase = await createClient();
 
@@ -109,26 +34,16 @@ export async function GET(request: NextRequest) {
   try {
     // Step 1: Check if a summary already exists
     let existingSummary;
-    if (userId) {
-      // Check by both URL and user_id if user is logged in
-      const { data, error } = await supabase
-        .from('history')
-        .select('title, summary')
-        .eq('url', url)
-        .eq('user_id', userId)
-        .maybeSingle();
-      if (error) throw error;
-      existingSummary = data;
-    } else {
-      // Check by URL alone if there is no logged-in user
-      const { data, error } = await supabase
-        .from('history')
-        .select('title, summary')
-        .eq('url', url)
-        .maybeSingle();
-      if (error) throw error;
-      existingSummary = data;
-    }
+
+    // Check by video id
+    const { data, error } = await supabase
+      .from('history')
+      .select('title, summary')
+      .eq('video_id', video_id)
+      .limit(1) // Limit to 1 row
+      .maybeSingle();
+    if (error) throw error;
+    existingSummary = data;
 
     // If a summary exists, return it immediately
     if (existingSummary) {
@@ -146,12 +61,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Step 2: Generate a new summary if not found
-    const { title, transcript } = await getYouTubeTranscript(url);
+    const { title, transcript } = await getYouTubeTranscript(video_id);
     const summary = await summarizeTranscript(transcript);
+    
 
     // Step 3: Save the new summary to history (if save)
     if (save) {
-      const insertData: any = { url, title, summary };
+      const insertData: any = { video_id, title, summary };
       if (userId) insertData.user_id = userId;
 
       const { error: insertError } = await supabase

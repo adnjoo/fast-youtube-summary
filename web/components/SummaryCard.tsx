@@ -4,7 +4,7 @@ import { copyUrl } from '@/components/HistoryCard';
 import { Notification } from '@/components/layout/Notification';
 import { useCopyToClipboard } from '@/lib/hooks';
 
-export const SummaryCard = ({ summary, loading, url }) => {
+export const SummaryCard = ({ summary, loading, video_id }) => {
   const { copySuccess, handleCopyClick } = useCopyToClipboard();
 
   if (!summary || loading) return null;
@@ -14,7 +14,7 @@ export const SummaryCard = ({ summary, loading, url }) => {
       <h2 className='mb-2 text-xl'>Summary</h2>
       <p>
         <button
-          onClick={() => handleCopyClick(copyUrl(url))}
+          onClick={() => handleCopyClick(copyUrl(video_id))}
           className='flex items-center text-blue-500 hover:text-blue-700 my-2'
           aria-label='Copy URL'
         >
