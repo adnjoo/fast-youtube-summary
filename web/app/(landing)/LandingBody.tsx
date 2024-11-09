@@ -142,7 +142,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         <Marquee>
           {examples.map((example: Example) => (
             <div
-              key={example.url}
+              key={example.video_id}
               className='group relative cursor-pointer'
               onClick={() =>
                 handleThumbnailClick(example.video_id, example.title)
