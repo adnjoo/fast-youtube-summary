@@ -3,24 +3,29 @@
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { type Example } from '@/app/(landing)/page';
 import { Marquee } from '@/components/Marquee';
 import { SummaryCard } from '@/components/SummaryCard';
 import { Button, Input, Switch } from '@/components/ui';
-import { getThumbnail, getTitle, isValidYouTubeUrl } from '@/lib/helpers';
-import { useUser } from '@/lib/hooks';
-import { createClient } from '@/utils/supabase/client';
+import {
+  extractVideoId,
+  getThumbnail,
+  getTitle,
+  getYouTubeURL,
+  isValidYouTubeUrl,
+} from '@/lib/helpers';
+import { useFocusShortcut, useUser } from '@/lib/hooks';
 
 export default function LandingBody({ examples }: { examples: Example[] }) {
   const searchParams = useSearchParams();
+  const initialVideoId = searchParams.get('v') || '';
   const router = useRouter();
-  const initialUrl = searchParams.get('url') || '';
   const user = useUser();
-  const supabase = createClient();
 
-  const [url, setUrl] = useState(initialUrl);
+  const [url, setUrl] = useState('');
+  const [video_id, setVideoId] = useState(initialVideoId);
   const [summary, setSummary] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +37,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   );
   const [thumbnailTitle, setThumbnailTitle] = useState('');
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useFocusShortcut('/');
 
   useEffect(() => {
     const showExamplesStored = localStorage.getItem('showExamples');
@@ -51,61 +56,54 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
   }, [showExamples, saveHistory]);
 
   useEffect(() => {
+    if (!video_id) return;
+    const url =getYouTubeURL(video_id);
     if (isValidYouTubeUrl(url)) {
-      fetchThumbnail(url);
+      fetchThumbnail(video_id);
       getTitle(url).then((title) => {
         setThumbnailTitle(title);
       });
 
       const params = new URLSearchParams();
-      params.set('url', url);
+      params.set('v', video_id);
       router.push(`?${params.toString()}`);
 
-      handleSummarize(url);
+      handleSummarize(video_id);
     }
-  }, [url]);
+  }, [video_id]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === '/') {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-    };
+  const handleInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const videoURL = event.target.value;
+    setUrl(videoURL);
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    const extractedVideoId = extractVideoId(videoURL) as string;
+    setVideoId(extractedVideoId);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newUrl = event.target.value;
-    setUrl(newUrl);
-
-    if (isValidYouTubeUrl(newUrl)) {
-      fetchThumbnail(newUrl);
-      getTitle(newUrl).then((title) => {
-        setThumbnailTitle(title);
-      });
+    if (isValidYouTubeUrl(videoURL)) {
+      fetchThumbnail(extractedVideoId);
+      const title = await getTitle(videoURL);
+      setThumbnailTitle(title);
     } else {
       setThumbnailUrl('');
       setThumbnailTitle('');
     }
   };
 
-  const fetchThumbnail = (videoUrl: string) => {
-    const thumbnail = getThumbnail(videoUrl);
+  const fetchThumbnail = (video_id: string) => {
+    const thumbnail = getThumbnail(video_id);
     setThumbnailUrl(thumbnail);
   };
 
-  const handleSummarize = async (videoUrl: string) => {
+  const handleSummarize = async (video_id: string) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `/summarize?url=${encodeURIComponent(videoUrl)}&save=${saveHistory}`
+        `/summarize?video_id=${encodeURIComponent(video_id)}&save=${saveHistory}`
       );
       const { summary } = await response.json();
       setSummary(summary);
-
     } catch (error) {
       console.error('Error processing summary:', error);
     } finally {
@@ -113,19 +111,15 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleSummarize(url);
-  };
+  const handleThumbnailClick = async (
+    exampleVideoId: string,
+    exampleVideoTitle: string
+  ) => {
+    setVideoId(exampleVideoId);
+    fetchThumbnail(exampleVideoId);
+    setThumbnailTitle(exampleVideoTitle);
 
-  const handleThumbnailClick = async (exampleUrl: string) => {
-    setUrl(exampleUrl);
-    fetchThumbnail(exampleUrl);
-    getTitle(exampleUrl).then((title) => {
-      setThumbnailTitle(title);
-    });
-
-    handleSummarize(exampleUrl);
+    handleSummarize(exampleVideoId);
   };
 
   return (
@@ -150,7 +144,9 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
             <div
               key={example.url}
               className='group relative cursor-pointer'
-              onClick={() => handleThumbnailClick(example.url)}
+              onClick={() =>
+                handleThumbnailClick(example.video_id, example.title)
+              }
             >
               <img
                 className='z-50 max-w-[120px] cursor-pointer rounded-sm shadow-md sm:max-w-[180px]'
@@ -166,7 +162,10 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
       )}
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e)=>{
+          e.preventDefault();
+          handleSummarize(video_id);
+        }}
         className='mx-auto flex w-full max-w-md flex-col items-center'
       >
         <Input
@@ -177,7 +176,6 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
           ref={inputRef}
           className='mb-4'
         />
-
         <Button type='submit' disabled={loading} className='relative'>
           Summarize
         </Button>
@@ -196,7 +194,7 @@ export default function LandingBody({ examples }: { examples: Example[] }) {
         </div>
       )}
       {loading && <Loader2 className='mx-auto mt-8 h-12 w-12 animate-spin' />}
-      <SummaryCard summary={summary} loading={loading} url={url} />
+      <SummaryCard summary={summary} loading={loading} video_id={video_id} />
     </main>
   );
 }

@@ -1,19 +1,16 @@
 import { NextRequest } from 'next/server';
 
-import { extractVideoId } from '@/lib/helpers';
 import { createClient } from '@/utils/supabase/server';
 
 import { fetchTranscript } from './fetchTranscript';
 import { summarizeTranscript } from './summarizeTranscript';
 
-async function getYouTubeTranscript(videoUrl: string) {
-  const videoId = extractVideoId(videoUrl); // Use helper to extract video ID
-
-  if (!videoId) {
+async function getYouTubeTranscript(video_id: string) {
+  if (!video_id) {
     throw new Error('Invalid video URL or missing video ID');
   }
 
-  const { title, transcript } = await fetchTranscript(videoId);
+  const { title, transcript } = await fetchTranscript(video_id);
 
   return {
     title: title || 'Title not available',
@@ -23,7 +20,7 @@ async function getYouTubeTranscript(videoUrl: string) {
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const url = searchParams.get('url') as string;
+  const video_id = searchParams.get('video_id') as string;
   const save = searchParams.get('save') === 'true'; // Check if 'save' is set to 'true'
   const supabase = await createClient();
 
@@ -37,26 +34,16 @@ export async function GET(request: NextRequest) {
   try {
     // Step 1: Check if a summary already exists
     let existingSummary;
-    if (userId) {
-      // Check by both URL and user_id if user is logged in
-      const { data, error } = await supabase
-        .from('history')
-        .select('title, summary')
-        .eq('url', url)
-        .eq('user_id', userId)
-        .maybeSingle();
-      if (error) throw error;
-      existingSummary = data;
-    } else {
-      // Check by URL alone if there is no logged-in user
-      const { data, error } = await supabase
-        .from('history')
-        .select('title, summary')
-        .eq('url', url)
-        .maybeSingle();
-      if (error) throw error;
-      existingSummary = data;
-    }
+
+    // Check by video id
+    const { data, error } = await supabase
+      .from('history')
+      .select('title, summary')
+      .eq('video_id', video_id)
+      .limit(1) // Limit to 1 row
+      .maybeSingle();
+    if (error) throw error;
+    existingSummary = data;
 
     // If a summary exists, return it immediately
     if (existingSummary) {
@@ -74,12 +61,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Step 2: Generate a new summary if not found
-    const { title, transcript } = await getYouTubeTranscript(url);
+    const { title, transcript } = await getYouTubeTranscript(video_id);
     const summary = await summarizeTranscript(transcript);
+    
 
     // Step 3: Save the new summary to history (if save)
     if (save) {
-      const insertData: any = { url, title, summary };
+      const insertData: any = { video_id, title, summary };
       if (userId) insertData.user_id = userId;
 
       const { error: insertError } = await supabase

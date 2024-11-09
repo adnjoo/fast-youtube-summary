@@ -5,4 +5,5 @@ export type History = {
   title: string;
   summary: string;
   created_at: string | null;
+  video_id: string;
 };
